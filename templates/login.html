@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+
+{% block content %}
+<div class="form-signin mt-5 pt-5">
+  <form method="POST" autocomplete="off">
+    {% csrf_token %}
+    <img class="row mx-auto rounded-circle border border-dark shadow" src="{% static 'images/cart_logo.png' %}" alt="" width="100" height="100">
+    <h1 class="h3 mb-5 text-center fw-normal">STORE</h1>
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger pl-0 pb-0" style="font-size: .75rem" role="alert">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+    {{ form.username.errors }}
+    {{ form.password.errors }}
+    {% render_field form.username class="form-control" placeholder="Username"  %}
+    {% render_field form.password class="form-control" placeholder="Password" %}
+    <br>
+    <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+  </form>
+</div>
+
+
+<style>
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+}
+.form-signin {
+  font-weight: 400;
+}
+.form-signin .form-control {
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin #id_username {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin #id_password {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+</style>
+
+{% endblock content %}
