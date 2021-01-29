@@ -38,24 +38,46 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarCollapse">
         {% if user.is_authenticated %}
             <li class="nav-item dropdown">
-              <button class="btn btn-sm btn-light fw-bold m-2 mb-0 mt-0 dropdown-toggle" id="navbarDarkDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="{% static 'bootstrap-5/icons/menu-app-fill.svg' %}" width="15" height="15"> Menu
+              <button class="btn btn-sm btn-primary fw-bold m-2 mb-0 mt-0 dropdown-toggle" id="navbarDarkDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="{% static 'bootstrap-5/icons/menu-app-fill.svg' %}" width="15" height="15" class="svg-to-white"> Menu
               </button>
-              <ul class="dropdown-menu dropdown-menu-dark rounded shadow-lg m-4 mb-0" aria-labelledby="navbarDarkDropdownMenuLink">
-                <li><a class="dropdown-item {% if not user.is_superuser and not user.is_staff %}disabled{% endif %}" href="{% url 'employee' %}">Employee</a></li>
-                <li><a class="dropdown-item" href="#">Cashier</a></li>
-                <li><a class="dropdown-item" href="#">Inventory</a></li>
+              <ul class="dropdown-menu dropdown-menu-dark rounded shadow-lg m-4 mt-1 mb-0" aria-labelledby="navbarDarkDropdownMenuLink">
+                <li>
+                  <a class="dropdown-item" href="{% url 'dashboard' %}">
+                    <img src="{% static 'bootstrap-5/icons/grid-1x2-fill.svg' %}" width="18" height="18" class="svg-to-white">&nbsp; Dashboard
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#">
+                    <img src="{% static 'bootstrap-5/icons/cash.svg' %}" width="18" height="18" class="svg-to-white">&nbsp; Cashier
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#">
+                    <img src="{% static 'bootstrap-5/icons/diagram-3-fill.svg' %}" width="18" height="18" class="svg-to-white">&nbsp; Inventory
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#">
+                    <img src="{% static 'bootstrap-5/icons/graph-up.svg' %}" width="18" height="18" class="svg-to-white">&nbsp; Sales
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item {% if not user.is_superuser and not user.is_staff %}disabled{% endif %}" href="{% url 'employee' %}">
+                    <img src="{% static 'bootstrap-5/icons/file-person-fill.svg' %}" width="18" height="18" class="svg-to-white">&nbsp; Employee
+                  </a>
+                </li>
               </ul>
             </li>
           
-          <a class="btn btn-sm btn-light fw-bold" href="{% url 'logout' %}">
-            <img src="{% static 'bootstrap-5/icons/box-arrow-right.svg' %}" width="15" height="15"> Logout
+          <a class="btn btn-sm btn-danger fw-bold" href="{% url 'logout' %}">
+            <img src="{% static 'bootstrap-5/icons/box-arrow-right.svg' %}" width="15" height="15" class="svg-to-white"> Logout
           </a>
         {% else %}
           <ul class="navbar-nav me-auto mb-2 mb-md-0">
           </ul>
-          <button id="close_btn" class="btn btn-sm btn-light fw-bold" onclick="close_message()">
-            <img src="{% static 'bootstrap-5/icons/x-square.svg' %}" width="20" height="20">
+          <button id="close_btn" class="btn btn-sm btn-danger fw-bold" onclick="close_message()">
+            <img src="{% static 'bootstrap-5/icons/x-square.svg' %}" width="25" height="25" class="svg-to-white p-0">
           </button>
         {% endif %}
         </div>
@@ -63,9 +85,55 @@
     </nav>
 
     <div class="container-fluid">
+      {% if messages %}
+        {% for message in messages %}
+          <div id="alertdiv" class="w-25 p-2 alert alert-{{ message.tags }}" style="text-align: center; font-weight: bold; height: 45px; position: absolute; top: 65px; right: 65px; z-index: 10;">
+            {{message}}
+          </div>
+          <script>
+            var alertdiv = document.getElementById("alertdiv");
+            setTimeout(function() {
+              alertdiv.style.display = "none";
+            }, 2000);
+          </script>
+        {% endfor %}
+      {% endif %}
       {% block content %}
       {% endblock content %}
     </div>
+
+    <!--custom styles-->
+    <style>
+      .svg-to-white{
+        filter: invert(100%);
+      }
+
+      {% comment %} .svg-to-yellow{
+        filter: invert(50%) sepia(100%) saturate(2000%) hue-rotate(20deg) brightness(100%) contrast(100%);
+      } {% endcomment %}
+            
+      /* width */
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      /* Track */
+      ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 3px grey; 
+        border-radius: 10px;
+      }
+      
+      /* Handle */
+      ::-webkit-scrollbar-thumb {
+        background: gray; 
+        border-radius: 10px;
+      }
+
+      /* Handle on hover */
+      ::-webkit-scrollbar-thumb:hover {
+        background: #b30000; 
+      }
+    </style>
 
     <!--Bootstrap-5 Script-->
     <script src="{% static 'bootstrap-5/js/bootstrap.bundle.min.js' %}"> </script>

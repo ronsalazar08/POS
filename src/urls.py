@@ -14,7 +14,7 @@ admin.site.site_url = "/dashboard"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('dashboard/', src_views.dashboard, name='dashboard'),
+    path('dashboard/', login_required(src_views.dashboard), name='dashboard'),
     path('employee/', include('apps.employee.urls')),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),

@@ -1,13 +1,212 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load widget_tweaks %} 
 
+{% block title %}
+Employee
+{% endblock title %}
+
 {% block content %}
-  {% for user in users %}
-    {{user}}<br>
-  {% endfor %}
-  <form method="POST" action="#" autocomplete="off">
-    {% csrf_token %}
-    {{form}}
-    <button type="submit">Confirm</button>
-  </form>
+  <div class="row">
+    <div class="col-md-4 my-auto text-center">
+      <button class="btn btn-success" onclick="employeeAddEdit('')">
+        <img src="{% static 'bootstrap-5/icons/person-plus-fill.svg' %}" width="20" height="20" class="p-0 svg-to-white"> New
+      </button>
+    </div>
+    <div class="col-md-4">
+      <h1 class="text-center m-3"> Employee List </h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-9 mx-auto">
+      <div class="card shadow-lg" >
+        <div class="card-body overflow-auto"  style="height: 480px;">
+          <table class="table table-hover">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Username</th>
+                <th scope="col">Admin</th>
+                <th scope="col">Active</th>
+                <th ></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in users %}
+                <tr>
+                  <td class="fw-bold">{{forloop.counter}}.</td>
+                  <td class="fw-bold">{{user.first_name}}</td>
+                  <td class="fw-bold">{{user.last_name}}</td>
+                  <td class="fw-bold">{{user.username}}</td>
+                  <td class="fw-bold {% if user.is_staff == True %} text-success">&#10003;{% else %} text-danger">&#10007;{% endif %}</td>
+                  <td class="fw-bold {% if user.is_active == True %} text-success">&#10003;{% else %} text-danger">&#10007;{% endif %}</td>
+                  {% if user.username == "admin" %}
+                    <td></td>
+                  {% else %}
+                    <td class="text-end">
+                      <button type="button" class="btn btn btn-sm btn-info" data-toggle="modal" data-toggle="tooltip" title="Edit" onclick="employeeAddEdit({{user.pk}}, '{{user.first_name}}', '{{user.last_name}}', '{{user.username}}', {{user.is_staff|lower}}, {{user.is_active|lower}}, '{{user.password1}}', '{{user.password2}}' )">
+                        <a href='#'><img src="{% static 'bootstrap-5/icons/pencil-fill.svg' %}" width="15" height="15" class="p-0 svg-to-white"></a>
+                      </button type="button">
+                      &nbsp;
+                      {% url 'delete_employee' pk=user.pk as delete_url %}
+                      <button type="button" class="btn btn btn-sm btn-danger" data-toggle="tooltip" title="Delete" onclick="delete_emp_confirm('{{delete_url}}', '{{user.username}}')">
+                        <a href='#'><img src="{% static 'bootstrap-5/icons/trash-fill.svg' %}" width="15" height="15" class="p-0 svg-to-white"></a>
+                      </button type="button">
+                    </td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- New/Edit Emp Modal -->
+  <div class="modal fade" id="newEmployeeModal" tabindex="-1" aria-labelledby="newEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newEmployeeModalLabel"><img src="{% static 'bootstrap-5/icons/person-circle.svg' %}" width="20" height="20" > &nbsp; <span id="new_edit_modal_emp"></span> Employee</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" autocomplete="off">
+            {% csrf_token %}
+            <div class="form-group">
+              {% for field, errors in form.errors.items %}
+                {% if errors %}
+                  <div id="alet_error_div" class="alert alert-danger pb-0" style="font-size: .75rem" role="alert">
+                    <ul>
+                    {% for error in errors %}
+                      <li>{{error}}</li>
+                    {% endfor %}
+                    </ul>
+                  </div>
+                {% endif %}
+              {% endfor %}
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="">First Name</label>
+                    {% render_field form.first_name class="form-control h5 font-weight-bold" %}
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group ">
+                    <label class="" >Last Name</label>
+                    {% render_field form.last_name class="form-control h5 font-weight-bold" %}
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-10">
+                  <div class="form-group ">
+                    <label class="">Username</label>
+                    {% render_field form.username class="form-control h5 font-weight-bold" %}
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group ">
+                    <label class="">Admin</label>
+                    {% render_field form.is_admin class=" h5 font-weight-bold" %}
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-10">
+                  <div class="form-group ">
+                    <label class="">Password</label>
+                    {% render_field form.password1 class="form-control h5 font-weight-bold" %}
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group ">
+                    <label class="">Active</label>
+                    {% render_field form.is_active class=" h5 font-weight-bold" %}
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-10">
+                  <div class="form-group ">
+                    <label class="">Confirm Password</label>
+                    {% render_field form.password2 class="form-control h5 font-weight-bold" %}
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <input type="hidden" id="form_ctrl" name="form_ctrl" value=""/>
+            <button type="submit" class="btn btn-primary">Confirm</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Emp Modal -->
+  <div class="modal fade" id="empformDeleteModal" tabindex="-1" role="dialog" aria-labelledby="empformDeleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newEmployeeModalLabel"><img src="{% static 'bootstrap-5/icons/person-dash-fill.svg' %}" width="20" height="20" > &nbsp; Delete Confirmation</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="font-weight-bold h5" >Are you sure to <strong>Delete</strong> Employee <strong><span class="text-danger" id="delete_modal_emp"></span></strong>?</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">No</button>
+            <a class="btn btn-success" id="deletey" href="">Yes</a>
+          </div>
+        </div>
+      </div>
 {% endblock content %}
+
+{% block script %}
+  <script>
+    {% if form.errors.items|length > 0 %}
+      var myModal = new bootstrap.Modal(document.getElementById('newEmployeeModal'));
+      myModal.show();
+    {% endif %}
+    function delete_emp_confirm(urla, username) {
+      var myModala = new bootstrap.Modal(document.getElementById('empformDeleteModal'));
+      myModala.show();
+      document.getElementById('delete_modal_emp').innerHTML = username;
+      document.getElementById('deletey').href = urla;
+    }
+
+    function employeeAddEdit(pk, first_name, last_name, username, is_admin, is_active, password1, password2) {
+      var myModalb = new bootstrap.Modal(document.getElementById('newEmployeeModal'));
+      myModalb.show();
+      if (pk == "" ) {
+      document.getElementById('new_edit_modal_emp').innerHTML = "New";
+      document.getElementById('id_first_name').value = "";
+      document.getElementById('id_last_name').value = "";
+      document.getElementById('id_username').value = "";
+      document.getElementById("id_is_admin").checked = false;
+      document.getElementById("id_is_active").checked = false;
+      document.getElementById('id_password1').value = "";
+      document.getElementById('id_password2').value = "";
+      document.getElementById('form_ctrl').value = "new_emp";
+      document.getElementById('alet_error_div').style.display = "none";
+    } else {
+      document.getElementById('new_edit_modal_emp').innerHTML = "Edit";
+      document.getElementById('id_first_name').value = first_name;
+      document.getElementById('id_last_name').value = last_name;
+      document.getElementById('id_username').value = username;
+      document.getElementById("id_is_admin").checked = is_admin;
+      document.getElementById("id_is_active").checked = is_active;
+      document.getElementById('id_password1').value = password1;
+      document.getElementById('id_password2').value = password2;
+      document.getElementById('form_ctrl').value = pk;
+      document.getElementById('alet_error_div').style.display = "none";
+    }
+    }
+  </script>
+{% endblock script %}
