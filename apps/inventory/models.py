@@ -16,7 +16,8 @@ class Category(models.Model):
 class Product(models.Model):
     barcode = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
-    description = models.CharField(max_length=50)    
+    description = models.CharField(max_length=50)
+    size = models.CharField(max_length=50, default=0)
     qty_stock = models.IntegerField(default=0)
     price = models.FloatField(default=0)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)

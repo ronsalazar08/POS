@@ -70,12 +70,12 @@ Employee
                   {% else %}
                     <td class="text-end">
                       <button type="button" class="btn btn btn-sm btn-info" data-toggle="modal" data-toggle="tooltip" title="Edit" onclick="employeeAddEdit({{user.pk}}, '{{user.first_name}}', '{{user.last_name}}', '{{user.username}}', {{user.is_staff|lower}}, {{user.is_active|lower}}, '{{user.password1}}', '{{user.password2}}' )">
-                        <a href='#'><img src="{% static 'bootstrap-5/icons/pencil-fill.svg' %}" width="15" height="15" class="p-0 svg-to-white"></a>
+                        <img src="{% static 'bootstrap-5/icons/pencil-fill.svg' %}" width="15" height="15" class="p-0 svg-to-white">
                       </button type="button">
                       &nbsp;
                       {% url 'delete_employee' pk=user.pk as delete_url %}
                       <button type="button" class="btn btn btn-sm btn-danger" data-toggle="tooltip" title="Delete" onclick="delete_emp_confirm('{{delete_url}}', '{{user.username}}')">
-                        <a href='#'><img src="{% static 'bootstrap-5/icons/trash-fill.svg' %}" width="15" height="15" class="p-0 svg-to-white"></a>
+                        <img src="{% static 'bootstrap-5/icons/trash-fill.svg' %}" width="15" height="15" class="p-0 svg-to-white">
                       </button type="button">
                     </td>
                   {% endif %}
@@ -89,7 +89,7 @@ Employee
   </div>
   
   <!-- New/Edit Emp Modal -->
-  <div class="modal fade" id="newEmployeeModal" tabindex="-1" aria-labelledby="newEmployeeModalLabel" aria-hidden="true">
+  <div class="modal modalfadeIn" id="newEmployeeModal" tabindex="-1" aria-labelledby="newEmployeeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -162,7 +162,7 @@ Employee
   </div>
 
   <!-- Delete Emp Modal -->
-  <div class="modal fade" id="empformDeleteModal" tabindex="-1" role="dialog" aria-labelledby="empformDeleteModalLabel" aria-hidden="true">
+  <div class="modal modalfadeIn" id="empformDeleteModal" tabindex="-1" role="dialog" aria-labelledby="empformDeleteModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
