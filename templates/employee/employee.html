@@ -7,22 +7,45 @@ Employee
 {% endblock title %}
 
 {% block content %}
+
+  {% if form.errors.items|length > 0 %}
+    {% for field, errors in form.errors.items %}
+      {% if errors %}
+        <div id="alert_error_div" class="p-1 pe-3 alert alert-danger" style="font-size: .8em; position: absolute; top: 45px; left: 425px; z-index: 10;">
+          <ul class="mb-0">
+          {% for error in errors %}
+            <li>{{error}}</li>
+          {% endfor %}
+          </ul>
+        </div>
+        <script>
+          var alertdiv = document.getElementById("alert_error_div");
+          fadeIn(alertdiv);
+          setTimeout(function() {
+            fadeOut(alertdiv, 1000);
+          }, 5000);
+        </script>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+
   <div class="row">
-    <div class="col-md-4 my-auto text-center">
+    <div class="col-md-4 pt-5 text-center">
       <button class="btn btn-success" onclick="employeeAddEdit('')">
         <img src="{% static 'bootstrap-5/icons/person-plus-fill.svg' %}" width="20" height="20" class="p-0 svg-to-white"> New
       </button>
     </div>
     <div class="col-md-4">
-      <h1 class="text-center m-3"> Employee List </h1>
+      <h1 class="text-center m-4"> Employee List </h1>
     </div>
   </div>
   <div class="row">
     <div class="col-md-9 mx-auto">
-      <div class="card shadow-lg" >
-        <div class="card-body overflow-auto"  style="height: 480px;">
+      <div class="card shadow-lg" style="border-radius:10px;">
+        <div class="card-body overflow-auto rounded"  style="height: 480px;">
           <table class="table table-hover">
-            <thead class="table-dark">
+            <thead class="">
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">First Name</th>
@@ -77,17 +100,6 @@ Employee
           <form method="POST" autocomplete="off">
             {% csrf_token %}
             <div class="form-group">
-              {% for field, errors in form.errors.items %}
-                {% if errors %}
-                  <div id="alet_error_div" class="alert alert-danger pb-0" style="font-size: .75rem" role="alert">
-                    <ul>
-                    {% for error in errors %}
-                      <li>{{error}}</li>
-                    {% endfor %}
-                    </ul>
-                  </div>
-                {% endif %}
-              {% endfor %}
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
@@ -170,43 +182,39 @@ Employee
 
 {% block script %}
   <script>
-    {% if form.errors.items|length > 0 %}
-      var myModal = new bootstrap.Modal(document.getElementById('newEmployeeModal'));
-      myModal.show();
-    {% endif %}
     function delete_emp_confirm(urla, username) {
       var myModala = new bootstrap.Modal(document.getElementById('empformDeleteModal'));
       myModala.show();
       document.getElementById('delete_modal_emp').innerHTML = username;
       document.getElementById('deletey').href = urla;
     }
-
+    
     function employeeAddEdit(pk, first_name, last_name, username, is_admin, is_active, password1, password2) {
       var myModalb = new bootstrap.Modal(document.getElementById('newEmployeeModal'));
       myModalb.show();
       if (pk == "" ) {
-      document.getElementById('new_edit_modal_emp').innerHTML = "New";
-      document.getElementById('id_first_name').value = "";
-      document.getElementById('id_last_name').value = "";
-      document.getElementById('id_username').value = "";
-      document.getElementById("id_is_admin").checked = false;
-      document.getElementById("id_is_active").checked = false;
-      document.getElementById('id_password1').value = "";
-      document.getElementById('id_password2').value = "";
-      document.getElementById('form_ctrl').value = "new_emp";
-      document.getElementById('alet_error_div').style.display = "none";
-    } else {
-      document.getElementById('new_edit_modal_emp').innerHTML = "Edit";
-      document.getElementById('id_first_name').value = first_name;
-      document.getElementById('id_last_name').value = last_name;
-      document.getElementById('id_username').value = username;
-      document.getElementById("id_is_admin").checked = is_admin;
-      document.getElementById("id_is_active").checked = is_active;
-      document.getElementById('id_password1').value = password1;
-      document.getElementById('id_password2').value = password2;
-      document.getElementById('form_ctrl').value = pk;
-      document.getElementById('alet_error_div').style.display = "none";
-    }
+        document.getElementById('new_edit_modal_emp').innerHTML = "New";
+        document.getElementById('id_first_name').value = "";
+        document.getElementById('id_last_name').value = "";
+        document.getElementById('id_username').value = "";
+        document.getElementById("id_is_admin").checked = false;
+        document.getElementById("id_is_active").checked = false;
+        document.getElementById('id_password1').value = "";
+        document.getElementById('id_password2').value = "";
+        document.getElementById('form_ctrl').value = "new_emp";
+        {% comment %} document.getElementById('alet_error_div').style.display = "none"; {% endcomment %}
+      } else {
+        document.getElementById('new_edit_modal_emp').innerHTML = "Edit";
+        document.getElementById('id_first_name').value = first_name;
+        document.getElementById('id_last_name').value = last_name;
+        document.getElementById('id_username').value = username;
+        document.getElementById("id_is_admin").checked = is_admin;
+        document.getElementById("id_is_active").checked = is_active;
+        document.getElementById('id_password1').value = password1;
+        document.getElementById('id_password2').value = password2;
+        document.getElementById('form_ctrl').value = pk;
+        {% comment %} document.getElementById('alet_error_div').style.display = "none"; {% endcomment %}
+      }
     }
   </script>
 {% endblock script %}
