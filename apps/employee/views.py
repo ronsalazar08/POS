@@ -14,16 +14,15 @@ def employee(request):
             form = RegistrationForm(request.POST)
             if form.is_valid():
                 form.save()
-                messages.success(request, f"{form.cleaned_data['first_name']} Successfully Added!")
-                form = RegistrationForm()
+                messages.success(request, f"{form.cleaned_data['username']} Successfully Added!")
+                return redirect('employee')
         else:
             pk = form_ctrl
             form = RegistrationForm(request.POST, instance=User.objects.get(pk=pk))
             if form.is_valid():
                 form.save()
-                messages.success(request, f"{form.cleaned_data['first_name']} Successfully Edited!")
-                form = RegistrationForm()
-        
+                messages.success(request, f"{form.cleaned_data['username']} Successfully Edited!")
+                return redirect('employee')
     context = {
         'users' : users,
         'form'  : form,
@@ -39,4 +38,4 @@ def delete_employee(request, pk):
     except:
         messages.warning(request, f"Employee Don't exist!")
     
-    return redirect(f'employee')
+    return redirect('employee')

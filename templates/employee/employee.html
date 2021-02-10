@@ -8,74 +8,49 @@ Employee
 
 {% block content %}
 
-  {% if form.errors.items|length > 0 %}
-    {% for field, errors in form.errors.items %}
-      {% if errors %}
-        <div id="alert_error_div" class="p-1 pe-3 alert alert-danger" style="font-size: .8em; position: absolute; top: 45px; left: 425px; z-index: 10;">
-          <ul class="mb-0">
-          {% for error in errors %}
-            <li>{{error}}</li>
-          {% endfor %}
-          </ul>
-        </div>
-        <script>
-          var alertdiv = document.getElementById("alert_error_div");
-          fadeIn(alertdiv);
-          setTimeout(function() {
-            fadeOut(alertdiv, 1000);
-          }, 5000);
-        </script>
-      {% endif %}
-    {% endfor %}
-  {% endif %}
-
-
-  <div class="row">
-    <div class="col-md-4 pt-5 text-center">
-      <button class="btn btn-success" onclick="employeeAddEdit('')">
-        <img src="{% static 'bootstrap-5/icons/person-plus-fill.svg' %}" width="20" height="20" class="p-0 svg-to-white"> New
-      </button>
-    </div>
-    <div class="col-md-4">
-      <h1 class="text-center m-4"> Employee List </h1>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-9 mx-auto">
-      <div class="card shadow-lg" style="border-radius:10px;">
-        <div class="card-body overflow-auto rounded"  style="height: 480px;">
-          <table class="table table-hover">
+  <div class="row mt-5">
+    <div class="card card-nav-tabs w-75 mx-auto">
+      <div class="card-header card-header-primary">
+        <h4>List of Employee
+          <button class="btn btn-white text-primary" style="position:absolute; top:-16px; right:25px;" data-toggle="modal" data-target="#newEmployeeModal" onclick="employeeAddEdit('')">
+            New &nbsp; <i class="material-icons">person_add</i>
+          </button>
+        </h4>
+      </div>
+      <div class="card-body" style="height:480px; overflow: auto;">
+        <div class="tab-content text-center">
+          <table class="table table-sm table-hover">
             <thead class="">
               <tr>
                 <th scope="col">#</th>
+                <th scope="col">Username</th>
                 <th scope="col">First Name</th>
                 <th scope="col">Last Name</th>
-                <th scope="col">Username</th>
                 <th scope="col">Admin</th>
                 <th scope="col">Active</th>
-                <th ></th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
               {% for user in users %}
                 <tr>
                   <td class="fw-bold">{{forloop.counter}}.</td>
+                  <td class="fw-bold">{{user.username}}</td>
                   <td class="fw-bold">{{user.first_name}}</td>
                   <td class="fw-bold">{{user.last_name}}</td>
-                  <td class="fw-bold">{{user.username}}</td>
                   <td class="fw-bold {% if user.is_staff == True %} text-success">&#10003;{% else %} text-danger">&#10007;{% endif %}</td>
                   <td class="fw-bold {% if user.is_active == True %} text-success">&#10003;{% else %} text-danger">&#10007;{% endif %}</td>
                   {% if user.username == "admin" %}
                     <td></td>
                   {% else %}
                     <td class="text-end">
-                      <button type="button" class="btn btn btn-sm btn-info" data-toggle="modal" data-toggle="tooltip" title="Edit" onclick="employeeAddEdit({{user.pk}}, '{{user.first_name}}', '{{user.last_name}}', '{{user.username}}', {{user.is_staff|lower}}, {{user.is_active|lower}}, '{{user.password1}}', '{{user.password2}}' )">
-                        <img src="{% static 'bootstrap-5/icons/pencil-fill.svg' %}" width="15" height="15" class="p-0 svg-to-white">
+                      <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-info" data-toggle="modal" data-tooltip="tooltip" title="Edit" data-target="#newEmployeeModal" onclick="employeeAddEdit({{user.pk}}, '{{user.first_name}}', '{{user.last_name}}', '{{user.username}}', {{user.is_staff|lower}}, {{user.is_active|lower}}, '{{user.password1}}', '{{user.password2}}' )">
+                        <i class="material-icons">edit</i>
                       </button type="button">
                       &nbsp;
                       {% url 'delete_employee' pk=user.pk as delete_url %}
-                      <button type="button" class="btn btn btn-sm btn-danger" data-toggle="tooltip" title="Delete" onclick="delete_emp_confirm('{{delete_url}}', '{{user.username}}')">
-                        <img src="{% static 'bootstrap-5/icons/trash-fill.svg' %}" width="15" height="15" class="p-0 svg-to-white">
+                      <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-danger" data-toggle="modal" data-tooltip="tooltip" title="Delete" data-target="#empformDeleteModal" onclick="delete_emp_confirm('{{delete_url}}', '{{user.username}}')">
+                        <i class="material-icons">delete</i>
                       </button type="button">
                     </td>
                   {% endif %}
@@ -87,14 +62,16 @@ Employee
       </div>
     </div>
   </div>
-  
+
   <!-- New/Edit Emp Modal -->
-  <div class="modal modalfadeIn" id="newEmployeeModal" tabindex="-1" aria-labelledby="newEmployeeModalLabel" aria-hidden="true">
+  <div class="modal fade" id="newEmployeeModal" tabindex="-1" aria-labelledby="newEmployeeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="newEmployeeModalLabel"><img src="{% static 'bootstrap-5/icons/person-circle.svg' %}" width="20" height="20" > &nbsp; <span id="new_edit_modal_emp"></span> Employee</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h3 class="modal-title" id="newEmployeeModalLabel"><span id="new_edit_modal_emp"></span> Employee <i class="material-icons">person_add</i></h3> 
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <div class="modal-body">
           <form method="POST" autocomplete="off">
@@ -103,13 +80,13 @@ Employee
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="">First Name</label>
+                    <label for="id_first_name" class="bmd-label-floating">First Name</label>
                     {% render_field form.first_name class="form-control h5 font-weight-bold" %}
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group ">
-                    <label class="" >Last Name</label>
+                    <label for="id_last_name" class="bmd-label-floating">Last Name</label>
                     {% render_field form.last_name class="form-control h5 font-weight-bold" %}
                   </div>
                 </div>
@@ -117,35 +94,45 @@ Employee
               <div class="row">
                 <div class="col-md-10">
                   <div class="form-group ">
-                    <label class="">Username</label>
+                    <label for="id_username" class="bmd-label-floating">Username</label>
                     {% render_field form.username class="form-control h5 font-weight-bold" %}
                   </div>
                 </div>
                 <div class="col-md-2">
-                  <div class="form-group ">
-                    <label class="">Admin</label>
-                    {% render_field form.is_admin class=" h5 font-weight-bold" %}
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      {% render_field form.is_admin class="form-check-input" %}
+                      Admin
+                      <span class="form-check-sign">
+                          <span class="check"></span>
+                      </span>
+                    </label>
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-10">
                   <div class="form-group ">
-                    <label class="">Password</label>
+                    <label for="id_password1" class="bmd-label-floating">Password</label>
                     {% render_field form.password1 class="form-control h5 font-weight-bold" %}
                   </div>
                 </div>
                 <div class="col-md-2">
-                  <div class="form-group ">
-                    <label class="">Active</label>
-                    {% render_field form.is_active class=" h5 font-weight-bold" %}
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      {% render_field form.is_active class="form-check-input" %}
+                      Active
+                      <span class="form-check-sign">
+                          <span class="check"></span>
+                      </span>
+                    </label>
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-10">
                   <div class="form-group ">
-                    <label class="">Confirm Password</label>
+                    <label for="id_password2" class="bmd-label-floating">Confirm Password</label>
                     {% render_field form.password2 class="form-control h5 font-weight-bold" %}
                   </div>
                 </div>
@@ -162,59 +149,65 @@ Employee
   </div>
 
   <!-- Delete Emp Modal -->
-  <div class="modal modalfadeIn" id="empformDeleteModal" tabindex="-1" role="dialog" aria-labelledby="empformDeleteModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="newEmployeeModalLabel"><img src="{% static 'bootstrap-5/icons/person-dash-fill.svg' %}" width="20" height="20" > &nbsp; Delete Confirmation</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="font-weight-bold h5" >Are you sure to <strong>Delete</strong> Employee <strong><span class="text-danger" id="delete_modal_emp"></span></strong>?</div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">No</button>
-            <a class="btn btn-success" id="deletey" href="">Yes</a>
-          </div>
+  <div class="modal fade" id="empformDeleteModal" tabindex="-1" role="dialog" aria-labelledby="empformDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title mt-0" id="newEmployeeModalLabel"><span id="new_edit_modal_emp"></span> Employee <i class="material-icons">person_remove</i></h3> 
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          <div class="font-weight-bold h5" >Are you sure to <strong>Delete</strong> Employee <strong><span class="text-danger" id="delete_modal_emp"></span></strong>?</div>
+        </div>
+        <div class="modal-footer">
+          <a type="button" class="btn text-white" data-dismiss="modal">No</a>
+          <a class="btn btn-primary" id="deletey" href="">Yes</a>
         </div>
       </div>
+    </div>
+  </div>
 {% endblock content %}
 
-{% block script %}
-  <script>
+{% block readyScript %}
+$('#newEmployeeModal').on('shown.bs.modal', function () {
+  $('input:text:visible:first', this).focus();
+})
+{% endblock readyScript %}
+
+{% block normalScript %}
     function delete_emp_confirm(urla, username) {
-      var myModala = new bootstrap.Modal(document.getElementById('empformDeleteModal'));
-      myModala.show();
-      document.getElementById('delete_modal_emp').innerHTML = username;
-      document.getElementById('deletey').href = urla;
+      $('#delete_modal_emp').text(username);
+      $('#deletey').attr("href", urla);
     }
     
     function employeeAddEdit(pk, first_name, last_name, username, is_admin, is_active, password1, password2) {
-      var myModalb = new bootstrap.Modal(document.getElementById('newEmployeeModal'));
-      myModalb.show();
       if (pk == "" ) {
-        document.getElementById('new_edit_modal_emp').innerHTML = "New";
-        document.getElementById('id_first_name').value = "";
-        document.getElementById('id_last_name').value = "";
-        document.getElementById('id_username').value = "";
-        document.getElementById("id_is_admin").checked = false;
-        document.getElementById("id_is_active").checked = false;
-        document.getElementById('id_password1').value = "";
-        document.getElementById('id_password2').value = "";
-        document.getElementById('form_ctrl').value = "new_emp";
+        $('#new_edit_modal_emp').text("New");
+        $('#id_first_name').val("");
+        $('#id_last_name').val("");
+        $('#id_username').val("");
+        $("#id_is_admin").prop('checked', false);
+        $("#id_is_active").prop('checked', true);
+        $('#id_password1').val("");
+        $('#id_password2').val("");
+        $('#form_ctrl').val("new_emp");
         {% comment %} document.getElementById('alet_error_div').style.display = "none"; {% endcomment %}
       } else {
-        document.getElementById('new_edit_modal_emp').innerHTML = "Edit";
-        document.getElementById('id_first_name').value = first_name;
-        document.getElementById('id_last_name').value = last_name;
-        document.getElementById('id_username').value = username;
-        document.getElementById("id_is_admin").checked = is_admin;
-        document.getElementById("id_is_active").checked = is_active;
-        document.getElementById('id_password1').value = password1;
-        document.getElementById('id_password2').value = password2;
-        document.getElementById('form_ctrl').value = pk;
+        $('#new_edit_modal_emp').text("Edit");
+        $('#id_first_name').val(first_name);
+        $('#id_last_name').val(last_name);
+        $('#id_username').val(username);
+        $("#id_is_admin").prop('checked', is_admin);
+        $("#id_is_active").prop('checked', is_active);
+        $('#id_password1').val(password1);
+        $('#id_password2').val(password2);
+        $('#form_ctrl').val(pk);
+       
+        {% comment %} $('#id_first_name').parent('.form-group').addClass('is-focused'); {% endcomment %}
+        {% comment %} $('#id_last_name').parent('.form-group').addClass('is-focused'); {% endcomment %}
         {% comment %} document.getElementById('alet_error_div').style.display = "none"; {% endcomment %}
       }
     }
-  </script>
-{% endblock script %}
+{% endblock normalScript %}
