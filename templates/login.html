@@ -7,68 +7,37 @@ Login
 {% endblock title %}
 
 {% block content %}
-
-<div class="card w-25 mx-auto shadow" style="margin-top: 5em;">
-  <div class="card-header card-header-primary">
-    <img class="row mx-auto rounded-circle border border-primary" src="{% static 'images/cart_logo.png' %}" alt="" width="100" height="100">
-    <div class="h3 text-center">OLO STORE</div>
-  </div>
-  <div class="card-body">
-    <form method="POST" autocomplete="off">
-      {% csrf_token %}
-      {% if form.non_field_errors %}
-        <div class="alert alert-danger pb-1" role="alert">
-          <i class="material-icons" style="float:left;">info</i>{{ form.non_field_errors }}
-        </div>
-      {% endif %}
-      {{ form.username.errors }}
-      {{ form.password.errors }}
-      <div class="form-group bmd-form-group">
-        <label for="id_username" class="bmd-label-floating">Username</label>
-        {% render_field form.username id="id_username" class="form-control" %}
+<div class="row mt-5">
+  <div class="col-md-4 mt-5 mx-auto">
+    <div class="card shadow">
+      <div class="card-header card-header-primary">
+        <img class="row mx-auto rounded-circle border border-primary" src="{% static 'images/cart_logo.png' %}" alt="" width="100" height="100">
+        <div class="h3 text-center">OLO STORE</div>
       </div>
-      <div class="form-group bmd-form-group">
-        <label for="id_username" class="bmd-label-floating">Password</label>
-        {% render_field form.password id="id_password" class="form-control" %}
+      <div class="card-body">
+        <form method="POST" autocomplete="off">
+          {% csrf_token %}
+          {% comment %} {% if form.non_field_errors %}
+            <div class="alert alert-danger pb-1" role="alert">
+              <i class="material-icons" style="float:left;">info</i>{{ form.non_field_errors }}
+            </div>
+          {% endif %} {% endcomment %}
+          {{ form.username.errors }}
+          {{ form.password.errors }}
+          <div class="form-group bmd-form-group">
+            <label for="id_username" class="bmd-label-floating">Username</label>
+            {% render_field form.username id="id_username" class="form-control" %}
+          </div>
+          <div class="form-group bmd-form-group">
+            <label for="id_username" class="bmd-label-floating">Password</label>
+            {% render_field form.password id="id_password" class="form-control" %}
+          </div>
+          
+          <button class="w-100 btn btn-lg btn-primary" type="submit">Log in</button>
+        </form>
       </div>
-      
-      <button class="w-100 btn btn-lg btn-primary" type="submit">Log in</button>
-    </form>
-  </div>
-</div>
-
-
-<style>
-.form-signin {
-  width: 100%;
-  max-width: 330px;
-  padding: 15px;
-  margin: auto;
-}
-.form-signin {
-  font-weight: 400;
-}
-.form-signin .form-control {
-  position: relative;
-  box-sizing: border-box;
-  height: auto;
-  padding: 10px;
-  font-size: 16px;
-}
-.form-signin .form-control:focus {
-  z-index: 2;
-}
-.form-signin #id_username {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-.form-signin #id_password {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-</style>
+    </div>
+  <div>
+<div>
 
 {% endblock content %}
