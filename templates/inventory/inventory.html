@@ -11,9 +11,12 @@ Inventory
   <div class="col-md-10">
     <div class="card card-nav-tabs">
       <div class="card-header card-header-primary">
-        <h4>List of Products
-          <button class="btn btn-white text-primary" style="position:absolute; top:-16px; right:25px;" data-toggle="modal" data-target="#newEmployeeModal" onclick="employeeAddEdit('')">
-            New &nbsp; <i class="material-icons">archive</i>
+        <h4><i class="material-icons" >library_books</i> List of Products
+          <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" {% comment %}style="position:absolute; top:-16px; right:25px;"{% endcomment %} data-toggle="modal" data-target="#newEditProductModal" onclick="newEditProduct('')">
+            New Product &nbsp; <i class="material-icons">archive</i>
+          </button>
+          <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" {% comment %}style="position:absolute; top:-16px; right:25px;"{% endcomment %} data-toggle="modal" data-target="#newEditProductModal" onclick="newEditProduct('')">
+            New Category &nbsp; <i class="material-icons">category</i>
           </button>
         </h4>
       </div>
@@ -22,33 +25,42 @@ Inventory
           <table class="table table-hover">
             <thead>
               <tr>
-                <th>BARCODE</th>
-                <th>NAME</th>
-                <th>DESCRIPTION</th>
+                <th class="text-left">BARCODE</th>
+                <th class="text-left">NAME</th>
+                <th class="text-left">DESCRIPTION</th>
                 <th>QTY STK</th>
                 <th>PRICE</th>
                 <th>CATEGORY</th>
                 <th>ENCODED BY</th>
-                <th></th>
+                <th>ACTIONS</th>
               </tr>
             </thead>
             <tbody>
             {% for product in products %}
               <tr class="">
-                <td>{{ product.barcode }}</td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.description }}</td>
-                <td>{{ product.qty_stock }}</td>
-                <td>{{ product.price }}</td>
+                <td class="text-left">{{ product.barcode }}</td>
+                <td class="text-left">{{ product.name }}</td>
+                <td class="text-left">{{ product.description }}</td>
+                <td>
+                  <span class="p-2 text-white rounded
+                    {% if product.qty_stock < 5 and product.qty_stock > 0 %}
+                      bg-warning
+                    {% elif product.qty_stock <= 0  %}
+                      bg-danger
+                    {% else  %}
+                      bg-success
+                    {% endif %}" style="font-weight: bold;"
+                  >{{ product.qty_stock }}</span></td>
+                <td class="text-left">&#8369; {{ product.price }}</td>
                 <td>{{ product.category|default_if_none:"----" }}</td>
                 <td>{{ product.encoded_by }}</td>
                 <td class="text-end">
-                  <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-info" data-toggle="modal" data-tooltip="tooltip" title="Edit" data-target="#newEmployeeModal" onclick="employeeAddEdit({{user.pk}}, '{{user.first_name}}', '{{user.last_name}}', '{{user.username}}', {{user.is_staff|lower}}, {{user.is_active|lower}}, '{{user.password1}}', '{{user.password2}}' )">
+                  <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-info" data-toggle="modal" data-tooltip="tooltip" title="Edit" data-target="#newEditProductModal" onclick="newEditProduct({{product.pk}}, '{{product.barcode}}', '{{product.name}}', '{{product.description}}', '{{product.size}}', {{product.qty_stock}}, {{product.price}}, '{{product.category}}', '{{product.password2}}' )">
                     <i class="material-icons">edit</i>
                   </button type="button">
                   &nbsp;
-                  {% url 'delete_employee' pk=user.pk as delete_url %}
-                  <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-danger" data-toggle="modal" data-tooltip="tooltip" title="Delete" data-target="#empformDeleteModal" onclick="delete_emp_confirm('{{delete_url}}', '{{user.username}}')">
+                  {% url 'delete_product' pk=product.pk as delete_url %}
+                  <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-danger" data-toggle="modal" data-tooltip="tooltip" title="Delete" data-target="#prodfromDeleteModal" onclick="delete_prod_confirm('{{delete_url}}', '{{product.name}}')">
                     <i class="material-icons">delete</i>
                   </button type="button">
                 </td>
@@ -72,7 +84,132 @@ Inventory
     </div>
   </div>
 </div>
+
+<!-- New/Edit Product Modal -->
+<div class="modal fade" id="newEditProductModal" tabindex="-1" aria-labelledby="newProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="material-icons">queue</i> <span id="new_edit_modal_prod"></span> Product</h3> 
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" autocomplete="off">
+          {% csrf_token %}
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="id_barcode" class="bmd-label-floating">Barcode</label>
+                  {% render_field form.barcode class="form-control h5 font-weight-bold" %}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="id_category" style="font-size: .75em">Category</label>
+                  {% render_field form.category class="form-control font-weight-bold" %}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mx-auto">
+                <div class="form-group">
+                  <label for="id_name" class="bmd-label-floating ">Name</label>
+                  {% render_field form.name class="form-control h5 font-weight-bold" %}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group ">
+                  <label for="id_description" class="bmd-label-floating">Description</label>
+                  {% render_field form.description class="form-control h5 font-weight-bold" %}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group ">
+                  <label for="id_size" class="bmd-label-floating">Size</label>
+                  {% render_field form.size class="form-control h5 font-weight-bold" %}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group ">
+                  <label for="id_qty_stock" class="bmd-label-floating">Quantity Stock</label>
+                  {% render_field form.qty_stock class="form-control h5 font-weight-bold" %}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mx-auto">
+                <div class="form-group ">
+                  <label for="id_price" class="bmd-label-floating">Price</label>
+                  {% render_field form.price class="form-control h5 font-weight-bold" %}
+                </div>
+              </div>
+            </div>
+              {% render_field form.password2 %}
+          </div>
+      </div>
+      <div class="modal-footer">
+          <input type="hidden" id="form_ctrl" name="form_ctrl" value=""/>
+          <button type="submit" class="btn btn-primary">Confirm</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Prod Modal -->
+<div class="modal fade" id="prodfromDeleteModal" tabindex="-1" role="dialog" aria-labelledby="prodfromDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title mt-0"><i class="material-icons">delete_sweep</i> Delete Product</h3> 
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="font-weight-bold h5" >Are you sure to <strong>Delete</strong> Product <strong><span class="text-primary" id="delete_modal_prod"></span></strong>?</div>
+      </div>
+      <div class="modal-footer">
+        <a type="button" class="btn text-white" data-dismiss="modal">No</a>
+        <a class="btn btn-primary" id="deletey" href="">Yes</a>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}
 
-{% block script %}
-{% endblock script %}
+{% block readyScript %}
+  {% if form.errors.items|length > 0 %}
+    {% comment %} $('#newProductModal').trigger('click'); {% endcomment %}
+  {% endif %}
+{% endblock readyScript %}
+
+{% block normalScript %}
+  function delete_prod_confirm(urla, name) {
+    $('#delete_modal_prod').text(name);
+    $('#deletey').attr("href", urla);
+  }
+
+  function newEditProduct(pk, product_no, wos_no, fq) {
+    if (pk == "" ) {
+      $('#dritemTransactionTitle').text("New");
+      $('#id_product_no').val("");
+      $('#id_wos_no').val("");
+      $('#id_first_quantity').val("");
+      $('#form_ctrl').val('new_item');
+    } else {
+      $('#dritemTransactionTitle').text("Edit");
+      $('#id_product_no').val(product_no);
+      $('#id_wos_no').val(wos_no);
+      $('#id_first_quantity').val(fq);
+      $('#form_ctrl').val(pk);
+    }
+  }
+{% endblock normalScript %}

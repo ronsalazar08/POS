@@ -11,8 +11,8 @@ Employee
   <div class="col-md-9 mx-auto">
     <div class="card card-nav-tabs">
       <div class="card-header card-header-primary">
-        <h4>List of Employees
-          <button class="btn btn-white text-primary" style="position:absolute; top:-16px; right:25px;" data-toggle="modal" data-target="#newEmployeeModal" onclick="employeeAddEdit('')">
+        <h4><i class="material-icons" >group</i> List of Employees
+          <button class="btn btn-white text-primary float-right btn-sm" data-toggle="modal" data-target="#newEmployeeModal" onclick="employeeAddEdit('')">
             New &nbsp; <i class="material-icons">person_add</i>
           </button>
         </h4>
@@ -65,11 +65,12 @@ Employee
 </div>
 
   <!-- New/Edit Emp Modal -->
+  <button id="empModalButton" data-toggle="modal" data-target="#newEmployeeModal" style="display:none;"></button>
   <div class="modal fade" id="newEmployeeModal" tabindex="-1" aria-labelledby="newEmployeeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title" id="newEmployeeModalLabel"><span id="new_edit_modal_emp"></span> Employee <i class="material-icons">person_add</i></h3> 
+          <h3 class="modal-title"><i class="material-icons">person</i> <span id="new_edit_modal_emp"></span> Employee</h3> 
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -154,13 +155,13 @@ Employee
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title mt-0" id="newEmployeeModalLabel"><span id="new_edit_modal_emp"></span> Employee <i class="material-icons">person_remove</i></h3> 
+          <h3 class="modal-title mt-0"><i class="material-icons">person_remove</i> Delete Employee</h3> 
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body text-center">
-          <div class="font-weight-bold h5" >Are you sure to <strong>Delete</strong> Employee <strong><span class="text-danger" id="delete_modal_emp"></span></strong>?</div>
+          <div class="font-weight-bold h5" >Are you sure to <strong>Delete</strong> Employee <strong><span class="text-primary" id="delete_modal_emp"></span></strong>?</div>
         </div>
         <div class="modal-footer">
           <a type="button" class="btn text-white" data-dismiss="modal">No</a>
@@ -172,43 +173,43 @@ Employee
 {% endblock content %}
 
 {% block readyScript %}
-$('#newEmployeeModal').on('shown.bs.modal', function () {
-  $('input:text:visible:first', this).focus();
-})
+  {% if form.errors.items|length > 0 %}
+    $('#empModalButton').trigger('click');
+  {% endif %}
 {% endblock readyScript %}
 
 {% block normalScript %}
-    function delete_emp_confirm(urla, username) {
-      $('#delete_modal_emp').text(username);
-      $('#deletey').attr("href", urla);
+  function delete_emp_confirm(urla, username) {
+    $('#delete_modal_emp').text(username);
+    $('#deletey').attr("href", urla);
+  }
+  
+  function employeeAddEdit(pk, first_name, last_name, username, is_admin, is_active, password1, password2) {
+    if (pk == "" ) {
+      $('#new_edit_modal_emp').text("New");
+      $('#id_first_name').val("");
+      $('#id_last_name').val("");
+      $('#id_username').val("");
+      $("#id_is_admin").prop('checked', false);
+      $("#id_is_active").prop('checked', true);
+      $('#id_password1').val("");
+      $('#id_password2').val("");
+      $('#form_ctrl').val("new_emp");
+      {% comment %} document.getElementById('alet_error_div').style.display = "none"; {% endcomment %}
+    } else {
+      $('#new_edit_modal_emp').text("Edit");
+      $('#id_first_name').val(first_name);
+      $('#id_last_name').val(last_name);
+      $('#id_username').val(username);
+      $("#id_is_admin").prop('checked', is_admin);
+      $("#id_is_active").prop('checked', is_active);
+      $('#id_password1').val(password1);
+      $('#id_password2').val(password2);
+      $('#form_ctrl').val(pk);
+      
+      {% comment %} $('#id_first_name').parent('.form-group').addClass('is-focused'); {% endcomment %}
+      {% comment %} $('#id_last_name').parent('.form-group').addClass('is-focused'); {% endcomment %}
+      {% comment %} document.getElementById('alet_error_div').style.display = "none"; {% endcomment %}
     }
-    
-    function employeeAddEdit(pk, first_name, last_name, username, is_admin, is_active, password1, password2) {
-      if (pk == "" ) {
-        $('#new_edit_modal_emp').text("New");
-        $('#id_first_name').val("");
-        $('#id_last_name').val("");
-        $('#id_username').val("");
-        $("#id_is_admin").prop('checked', false);
-        $("#id_is_active").prop('checked', true);
-        $('#id_password1').val("");
-        $('#id_password2').val("");
-        $('#form_ctrl').val("new_emp");
-        {% comment %} document.getElementById('alet_error_div').style.display = "none"; {% endcomment %}
-      } else {
-        $('#new_edit_modal_emp').text("Edit");
-        $('#id_first_name').val(first_name);
-        $('#id_last_name').val(last_name);
-        $('#id_username').val(username);
-        $("#id_is_admin").prop('checked', is_admin);
-        $("#id_is_active").prop('checked', is_active);
-        $('#id_password1').val(password1);
-        $('#id_password2').val(password2);
-        $('#form_ctrl').val(pk);
-       
-        {% comment %} $('#id_first_name').parent('.form-group').addClass('is-focused'); {% endcomment %}
-        {% comment %} $('#id_last_name').parent('.form-group').addClass('is-focused'); {% endcomment %}
-        {% comment %} document.getElementById('alet_error_div').style.display = "none"; {% endcomment %}
-      }
-    }
+  }
 {% endblock normalScript %}

@@ -82,8 +82,13 @@ The above copyright notice and this permission notice shall be included in all c
       </div>
     </nav>
     <div class="container-fluid">
+      
+      <!--page contents-->
+      {% block content %}
+      {% endblock content %}
+
       <!--AlertModal-->
-      <button id="alertModalButton" data-toggle="modal" data-target="#alertModal" style="display:none;"></button>
+      <button id="alertModalButton" data-toggle="modal" data-target="#alertModal" style="display:none; z-index: 10000000 !important"></button>
       {% if messages %}
         <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -95,7 +100,7 @@ The above copyright notice and this permission notice shall be included in all c
                       <i style="font-size:7em;" class="material-icons text-success">check_circle</i>
                     </div>
                   {% endif %}
-                  <div class="h2 m-0 p-0">{{ message|title }}</div>
+                  <div class="h2 m-0 p-0">{{ message|safe }}</div>
                 {% endfor %}
               </div>
             </div>
@@ -123,12 +128,6 @@ The above copyright notice and this permission notice shall be included in all c
           {% endif %}
         {% endfor %}
       {% endif %}
-      
-      
-      <!--page contents-->
-      {% block content %}
-      {% endblock content %}
-
     </div>
 
     <script type="text/javascript">
@@ -154,6 +153,10 @@ The above copyright notice and this permission notice shall be included in all c
     <script src="{% static 'vue.js' %}"></script> {% endcomment %}
     <script>
       $(document).ready(function() {
+        <!--show tooltip-->
+        $('[data-tooltip="tooltip"]').tooltip();
+
+        <!--show alert modal-->
         {% if messages or form.errors.items|length > 0 %}
           $('#alertModalButton').trigger('click');
           setTimeout(function(){
@@ -161,8 +164,8 @@ The above copyright notice and this permission notice shall be included in all c
           }, 3000);
         {% endif %}
 
-        $('[data-tooltip="tooltip"]').tooltip();
 
+        <!--prevent ctrl+p-->
         $(document).on('keydown', function(e) {
           if(e.ctrlKey && (e.key == "p" || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80) ){
             /*prevent crtl+p*/
@@ -172,8 +175,14 @@ The above copyright notice and this permission notice shall be included in all c
           }  
         });
 
+        <!--display press alt+f4-->
         $( "#power_off" ).click(function() {
           $( "#power_off" ).html('To close the App <strong class="text-danger">Please Press "alt + f4"</strong>');
+        });
+
+        <!--focus on modal show-->
+        $('.modal').on('shown.bs.modal', function () {
+          $('input:text:visible:first', this).focus();
         });
 
         {% block readyScript %}

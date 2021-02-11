@@ -5,6 +5,7 @@ from django.views.generic import ListView
 from django.shortcuts import render, redirect
 
 from .models import *
+from .forms import *
 
 class InventoryView(ListView):
     model = Product
@@ -14,8 +15,8 @@ class InventoryView(ListView):
     def get_context_data(self, **kwargs):
         context = super(InventoryView, self).get_context_data(**kwargs)
         context.update({
-            # 'form'  : NewDrForm,
             'search' : self.request.GET.get('search'),
+            'form'  : ProductForm,
         })
         return context
         
@@ -32,3 +33,19 @@ class InventoryView(ListView):
                 messages.success(self.request, f'Displaying "{search}"')
 
         return queryset
+
+
+def new_edit_product(request):
+
+    return redirect('inventory')
+
+
+def delete_product(request, pk):
+    try:
+        prod = Product.objects.get(pk=pk)
+        Product.objects.get(pk=pk).delete()
+        messages.success(request, f' <span class="text-primary">{prod.name.upper()}</span> Successfully Deleted!')
+    except:
+        messages.warning(request, f"Product Don't exist!")
+    
+    return redirect('inventory')
