@@ -15,9 +15,6 @@ Inventory
           <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" {% comment %}style="position:absolute; top:-16px; right:25px;"{% endcomment %} data-toggle="modal" data-target="#newEditProductModal" onclick="newEditProduct('new')">
             New Product &nbsp; <i class="material-icons">archive</i>
           </button>
-          <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" {% comment %}style="position:absolute; top:-16px; right:25px;"{% endcomment %} data-toggle="modal" data-target="#newEditCategoryModal" onclick="newEditCategory('')">
-            New Category &nbsp; <i class="material-icons">category</i>
-          </button>
         </h4>
       </div>
       {% comment %} <div class="card-body" style="height:535px; overflow: auto;"> {% endcomment %}
@@ -163,50 +160,6 @@ Inventory
   </div>
 </div>
 
-
-<!-- New/Edit Category Modal -->
-<div class="modal fade" id="newEditCategoryModal" tabindex="-1" aria-labelledby="newProductModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title"><i class="material-icons">category</i> <span id="new_edit_modal_prod"></span> Category</h3> 
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form method="POST" autocomplete="off">
-          {% csrf_token %}
-          <div class="form-group">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <label for="id_barcode" class="bmd-label-floating">Name</label>
-                  {% render_field category_form.name class="form-control h5 font-weight-bold" %}
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group ">
-                  <label for="id_description" class="bmd-label-floating">Description</label>
-                  {% render_field category_form.description class="form-control h5 font-weight-bold" %}
-                </div>
-              </div>
-            </div>
-          </div>
-      </div>
-      <div class="modal-footer">
-          <input type="hidden" id="form_ctrl" name="form_ctrl" value=""/>
-          <button type="submit" class="btn btn-primary">Confirm</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
 <!-- Delete Prod Modal -->
 <div class="modal fade" id="prodfromDeleteModal" tabindex="-1" role="dialog" aria-labelledby="prodfromDeleteModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -233,7 +186,6 @@ Inventory
   {% if form.errors.items|length > 0 %}
     $('#prodModalButton').trigger('click');
     $('#form_ctrl').val(localStorage.getItem("globalProdPK"));
-    console.log(localStorage.getItem("globalProdPK"));
   {% endif %}
 {% endblock readyScript %}
 
@@ -267,6 +219,5 @@ Inventory
       $('#id_category').prop("selectedIndex", category);
       $('#form_ctrl').val(pk);
     }
-    console.log(localStorage.getItem("globalProdPK"));
   }
 {% endblock normalScript %}
