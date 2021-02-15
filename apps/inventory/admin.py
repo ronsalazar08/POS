@@ -10,7 +10,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display=["barcode", "name", "description", "size", "qty_stock", "price", "category", "encoded_by"]
+    list_display=["barcode", "name", "description", "size", "qty_stock", "price", "category"]
     search_fields=["barcode", "name", "category"]
     list_filter=["category"]
-    raw_id_fields=["category", "encoded_by"]
+    raw_id_fields=["category"]

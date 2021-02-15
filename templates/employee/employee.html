@@ -12,12 +12,12 @@ Employee
     <div class="card card-nav-tabs">
       <div class="card-header card-header-primary">
         <h4><i class="material-icons" >group</i> List of Employees
-          <button class="btn btn-white text-primary float-right btn-sm" data-toggle="modal" data-target="#newEmployeeModal" onclick="employeeAddEdit('')">
-            New &nbsp; <i class="material-icons">person_add</i>
+          <button class="btn btn-white text-primary float-right btn-sm" data-toggle="modal" data-target="#newEmployeeModal" onclick="employeeAddEdit('new')">
+            New Employee &nbsp; <i class="material-icons">person_add</i>
           </button>
         </h4>
       </div>
-      <div class="card-body" style="height:540px; overflow: auto;">
+      <div class="card-body" style="height: calc(100vh - 185px); overflow: auto;">
         <div class="tab-content text-center">
           <table class="table table-sm table-hover">
             <thead class="">
@@ -175,6 +175,8 @@ Employee
 {% block readyScript %}
   {% if form.errors.items|length > 0 %}
     $('#empModalButton').trigger('click');
+    {% comment %} console.log(localStorage.getItem("globalEmpPK")); {% endcomment %}
+    $('#form_ctrl').val(localStorage.getItem("globalEmpPK"));
   {% endif %}
 {% endblock readyScript %}
 
@@ -185,7 +187,8 @@ Employee
   }
   
   function employeeAddEdit(pk, first_name, last_name, username, is_admin, is_active, password1, password2) {
-    if (pk == "" ) {
+    localStorage.setItem("globalEmpPK", pk.toString());
+    if (pk == "new" ) {
       $('#new_edit_modal_emp').text("New");
       $('#id_first_name').val("");
       $('#id_last_name').val("");
@@ -195,7 +198,6 @@ Employee
       $('#id_password1').val("");
       $('#id_password2').val("");
       $('#form_ctrl').val("new_emp");
-      {% comment %} document.getElementById('alet_error_div').style.display = "none"; {% endcomment %}
     } else {
       $('#new_edit_modal_emp').text("Edit");
       $('#id_first_name').val(first_name);
@@ -206,10 +208,7 @@ Employee
       $('#id_password1').val(password1);
       $('#id_password2').val(password2);
       $('#form_ctrl').val(pk);
-      
-      {% comment %} $('#id_first_name').parent('.form-group').addClass('is-focused'); {% endcomment %}
-      {% comment %} $('#id_last_name').parent('.form-group').addClass('is-focused'); {% endcomment %}
-      {% comment %} document.getElementById('alet_error_div').style.display = "none"; {% endcomment %}
     }
+    {% comment %} console.log(localStorage.getItem("globalEmpPK")); {% endcomment %}
   }
 {% endblock normalScript %}

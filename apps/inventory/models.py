@@ -14,14 +14,13 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    barcode = models.CharField(max_length=50)
+    barcode = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=50)
-    size = models.CharField(max_length=50, default=0)
+    size = models.CharField(max_length=50, default='')
     qty_stock = models.IntegerField(default=0)
     price = models.FloatField(default=0)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
-    encoded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         verbose_name = ("product")

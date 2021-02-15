@@ -12,53 +12,53 @@ Inventory
     <div class="card card-nav-tabs">
       <div class="card-header card-header-primary">
         <h4><i class="material-icons" >library_books</i> List of Products
-          <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" {% comment %}style="position:absolute; top:-16px; right:25px;"{% endcomment %} data-toggle="modal" data-target="#newEditProductModal" onclick="newEditProduct('')">
+          <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" {% comment %}style="position:absolute; top:-16px; right:25px;"{% endcomment %} data-toggle="modal" data-target="#newEditProductModal" onclick="newEditProduct('new')">
             New Product &nbsp; <i class="material-icons">archive</i>
           </button>
-          <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" {% comment %}style="position:absolute; top:-16px; right:25px;"{% endcomment %} data-toggle="modal" data-target="#newEditProductModal" onclick="newEditProduct('')">
+          <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" {% comment %}style="position:absolute; top:-16px; right:25px;"{% endcomment %} data-toggle="modal" data-target="#newEditCategoryModal" onclick="newEditCategory('')">
             New Category &nbsp; <i class="material-icons">category</i>
           </button>
         </h4>
       </div>
-      <div class="card-body" style="height:540px; overflow: auto;">
-        <div class="tab-content text-center">
+      {% comment %} <div class="card-body" style="height:535px; overflow: auto;"> {% endcomment %}
+      <div class="card-body" style="height: calc(100vh - 185px); overflow: auto;">
+        <div class="tab-content">
           <table class="table table-hover">
             <thead>
               <tr>
-                <th class="text-left">BARCODE</th>
-                <th class="text-left">NAME</th>
-                <th class="text-left">DESCRIPTION</th>
-                <th>QTY STK</th>
+                <th>BARCODE</th>
+                <th>NAME</th>
+                <th style="max-width: 200px;">DESC.</th>
+                <th>SIZE</th>
+                <th class="text-center">STOCK</th>
                 <th>PRICE</th>
-                <th>CATEGORY</th>
-                <th>ENCODED BY</th>
-                <th>ACTIONS</th>
+                <th class="text-center">CAT</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
             {% for product in products %}
-              <tr class="">
-                <td class="text-left">{{ product.barcode }}</td>
-                <td class="text-left">{{ product.name }}</td>
-                <td class="text-left">{{ product.description }}</td>
-                <td>
-                  <span class="p-2 text-white rounded
+              <tr>
+                <td>{{ product.barcode }}</td>
+                <td>{{ product.name }}</td>
+                <td style="max-width: 200px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">{{ product.description }}</td>
+                <td>{{ product.size }}</td>
+                <td class="text-center">
+                  <span class="p-2 border rounded
                     {% if product.qty_stock < 5 and product.qty_stock > 0 %}
-                      bg-warning
+                      text-warning border-warning
                     {% elif product.qty_stock <= 0  %}
-                      bg-danger
+                      text-danger border-danger
                     {% else  %}
-                      bg-success
+                      text-success border-success
                     {% endif %}" style="font-weight: bold;"
                   >{{ product.qty_stock }}</span></td>
-                <td class="text-left">&#8369; {{ product.price }}</td>
-                <td>{{ product.category|default_if_none:"----" }}</td>
-                <td>{{ product.encoded_by }}</td>
-                <td class="text-end">
-                  <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-info" data-toggle="modal" data-tooltip="tooltip" title="Edit" data-target="#newEditProductModal" onclick="newEditProduct({{product.pk}}, '{{product.barcode}}', '{{product.name}}', '{{product.description}}', '{{product.size}}', {{product.qty_stock}}, {{product.price}}, '{{product.category}}', '{{product.password2}}' )">
+                <td>&#8369; {{ product.price }}</td>
+                <td class="text-center">{{ product.category|default_if_none:"----" }}</td>
+                <td class="text-center">
+                  <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-info" data-toggle="modal" data-tooltip="tooltip" title="Edit" data-target="#newEditProductModal" onclick="newEditProduct({{product.pk}}, '{{product.barcode}}', '{{product.name}}', '{{product.description}}', '{{product.size}}', {{product.qty_stock}}, {{product.price}}, '{{product.category.pk}}')">
                     <i class="material-icons">edit</i>
                   </button type="button">
-                  &nbsp;
                   {% url 'delete_product' pk=product.pk as delete_url %}
                   <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-danger" data-toggle="modal" data-tooltip="tooltip" title="Delete" data-target="#prodfromDeleteModal" onclick="delete_prod_confirm('{{delete_url}}', '{{product.name}}')">
                     <i class="material-icons">delete</i>
@@ -86,6 +86,7 @@ Inventory
 </div>
 
 <!-- New/Edit Product Modal -->
+<button id="prodModalButton" data-toggle="modal" data-target="#newEditProductModal" style="display:none;"></button>
 <div class="modal fade" id="newEditProductModal" tabindex="-1" aria-labelledby="newProductModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
@@ -151,7 +152,6 @@ Inventory
                 </div>
               </div>
             </div>
-              {% render_field form.password2 %}
           </div>
       </div>
       <div class="modal-footer">
@@ -162,6 +162,50 @@ Inventory
     </div>
   </div>
 </div>
+
+
+<!-- New/Edit Category Modal -->
+<div class="modal fade" id="newEditCategoryModal" tabindex="-1" aria-labelledby="newProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="material-icons">category</i> <span id="new_edit_modal_prod"></span> Category</h3> 
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" autocomplete="off">
+          {% csrf_token %}
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="id_barcode" class="bmd-label-floating">Name</label>
+                  {% render_field category_form.name class="form-control h5 font-weight-bold" %}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group ">
+                  <label for="id_description" class="bmd-label-floating">Description</label>
+                  {% render_field category_form.description class="form-control h5 font-weight-bold" %}
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+          <input type="hidden" id="form_ctrl" name="form_ctrl" value=""/>
+          <button type="submit" class="btn btn-primary">Confirm</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 <!-- Delete Prod Modal -->
 <div class="modal fade" id="prodfromDeleteModal" tabindex="-1" role="dialog" aria-labelledby="prodfromDeleteModalLabel" aria-hidden="true">
@@ -187,7 +231,9 @@ Inventory
 
 {% block readyScript %}
   {% if form.errors.items|length > 0 %}
-    {% comment %} $('#newProductModal').trigger('click'); {% endcomment %}
+    $('#prodModalButton').trigger('click');
+    $('#form_ctrl').val(localStorage.getItem("globalProdPK"));
+    console.log(localStorage.getItem("globalProdPK"));
   {% endif %}
 {% endblock readyScript %}
 
@@ -197,19 +243,30 @@ Inventory
     $('#deletey').attr("href", urla);
   }
 
-  function newEditProduct(pk, product_no, wos_no, fq) {
-    if (pk == "" ) {
-      $('#dritemTransactionTitle').text("New");
-      $('#id_product_no').val("");
-      $('#id_wos_no').val("");
-      $('#id_first_quantity').val("");
+  function newEditProduct(pk, barcode, name, description, size, qty_stock, price, category) {
+    if (pk == "new" ) {
+      localStorage.setItem("globalProdPK", 'new_item');
+      $('#new_edit_modal_prod').text("New");
+      $('#id_barcode').val("");
+      $('#id_name').val("");
+      $('#id_description').val("");
+      $('#id_size').val("");
+      $('#id_qty_stock').val("");
+      $('#id_price').val("");
+      $('#id_category').prop("selectedIndex", 0);
       $('#form_ctrl').val('new_item');
     } else {
-      $('#dritemTransactionTitle').text("Edit");
-      $('#id_product_no').val(product_no);
-      $('#id_wos_no').val(wos_no);
-      $('#id_first_quantity').val(fq);
+      localStorage.setItem("globalProdPK", pk.toString());
+      $('#new_edit_modal_prod').text("Edit");
+      $('#id_barcode').val(barcode);
+      $('#id_name').val(name);
+      $('#id_description').val(description);
+      $('#id_size').val(size);
+      $('#id_qty_stock').val(qty_stock);
+      $('#id_price').val(price);
+      $('#id_category').prop("selectedIndex", category);
       $('#form_ctrl').val(pk);
     }
+    console.log(localStorage.getItem("globalProdPK"));
   }
 {% endblock normalScript %}

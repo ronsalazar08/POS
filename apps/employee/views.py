@@ -21,7 +21,7 @@ def employee(request):
             form = RegistrationForm(request.POST, instance=User.objects.get(pk=pk))
             if form.is_valid():
                 form.save()
-                messages.success(request, f'<span class="text-primary">{form.cleaned_data["username"].upper()}</span> Successfully Edited!')
+                messages.success(request, f'<span class="text-primary">{form.cleaned_data["username"].upper()}</span> Successfully Updated!')
                 return redirect('employee')
     context = {
         'users' : users,

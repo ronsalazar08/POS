@@ -1,43 +1,42 @@
-from django.contrib import messages
 from django.db.models import Q
-from django.http.response import StreamingHttpResponse
-from django.views.generic import ListView
+from django.contrib import messages
 from django.shortcuts import render, redirect
 
 from .models import *
 from .forms import *
 
-class InventoryView(ListView):
-    model = Product
-    template_name = 'inventory/inventory.html'  
-    context_object_name = 'products' 
 
-    def get_context_data(self, **kwargs):
-        context = super(InventoryView, self).get_context_data(**kwargs)
-        context.update({
-            'search' : self.request.GET.get('search'),
-            'form'  : ProductForm,
-        })
-        return context
-        
-    def get_queryset(self, **kwargs):
-        search = self.request.GET.get('search')
-
-        queryset = self.model.objects.all().order_by('name')
-        if search:
-            queryset = queryset.filter(Q(barcode__contains=search) | Q(name__contains=search) | Q(description__contains=search))
-            if len(queryset) == 0:
-                queryset = self.model.objects.all()
-                messages.warning(self.request, f'Cannot find "{search}"')
-            else:
-                messages.success(self.request, f'Displaying "{search}"')
-
-        return queryset
-
-
-def new_edit_product(request):
-
-    return redirect('inventory')
+def inventory(request):
+    products = Product.objects.all()
+    form = ProductForm()
+    category_form = CategoryForm()
+    if request.method == "POST":
+        form_ctrl = request.POST.get('form_ctrl')
+        if form_ctrl == "new_item":
+            form = ProductForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, f'Item <span class="text-primary">{form.cleaned_data["name"].upper()}</span> Successfully Added!')
+                return redirect('inventory')
+        elif form_ctrl == "new_category":
+            category_form = CategoryForm(request.POST)
+            if category_form.is_valid():
+                form.save()
+                messages.success(request, f'Category <span class="text-primary">{form.cleaned_data["name"].upper()}</span> Successfully Added!')
+                return redirect('inventory')
+        else:
+            pk = form_ctrl
+            form = ProductForm(request.POST, instance=Product.objects.get(pk=pk))
+            if form.is_valid():
+                form.save()
+                messages.success(request, f'Item <span class="text-primary">{form.cleaned_data["name"].upper()}</span> Successfully Updated!')
+                return redirect('inventory')
+    context = {
+        'products' : products,
+        'form'  : form,
+        'category_form'  : category_form,
+    }
+    return render(request, 'inventory/inventory.html', context)
 
 
 def delete_product(request, pk):
