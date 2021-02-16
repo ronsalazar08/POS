@@ -12,8 +12,12 @@ Inventory
     <div class="card card-nav-tabs">
       <div class="card-header card-header-primary">
         <h4><i class="material-icons" >library_books</i> List of Products
+          <form id="add_edit_form" >
+            <input type="text" id="input_fetch" placeholder="add or edit.." class="textinput textInput form-control" autofocus>
+            <button type="submit" class="d-none">submit</button>
+          </form>
           <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" {% comment %}style="position:absolute; top:-16px; right:25px;"{% endcomment %} data-toggle="modal" data-target="#newEditProductModal" onclick="newEditProduct('new')">
-            New Product &nbsp; <i class="material-icons">archive</i>
+            Add / Edit Product &nbsp; <i class="material-icons">queue</i>
           </button>
         </h4>
       </div>
@@ -29,11 +33,10 @@ Inventory
                 <th>SIZE</th>
                 <th class="text-center">STOCK</th>
                 <th>PRICE</th>
-                <th class="text-center">CAT</th>
-                <th></th>
+                <th class="text-center pl-0 pr-0" colspan=2>ACTIONS</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="product_list">
             {% for product in products %}
               <tr>
                 <td>{{ product.barcode }}</td>
@@ -51,11 +54,12 @@ Inventory
                     {% endif %}" style="font-weight: bold;"
                   >{{ product.qty_stock }}</span></td>
                 <td>&#8369; {{ product.price }}</td>
-                <td class="text-center">{{ product.category|default_if_none:"----" }}</td>
-                <td class="text-center">
+                <td class="text-center pl-0 pr-0">
                   <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-info" data-toggle="modal" data-tooltip="tooltip" title="Edit" data-target="#newEditProductModal" onclick="newEditProduct({{product.pk}}, '{{product.barcode}}', '{{product.name}}', '{{product.description}}', '{{product.size}}', {{product.qty_stock}}, {{product.price}}, '{{product.category.pk}}')">
                     <i class="material-icons">edit</i>
                   </button type="button">
+                </td>
+                <td class="text-center pl-0 pr-0">
                   {% url 'delete_product' pk=product.pk as delete_url %}
                   <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-danger" data-toggle="modal" data-tooltip="tooltip" title="Delete" data-target="#prodfromDeleteModal" onclick="delete_prod_confirm('{{delete_url}}', '{{product.name}}')">
                     <i class="material-icons">delete</i>
@@ -73,10 +77,10 @@ Inventory
       </div>
     </div>
   </div>
-  <div class="col-md-2 h-50">
+  <div class="col-md-2">    
     <div class="card shadow-lg" style="border-radius:10px;">
       <div class="card-body">
-        Search
+        <input type="search" id="input_search" placeholder="Search.." class="textinput textInput form-control" autofocus>
       </div>
     </div>
   </div>
@@ -98,16 +102,10 @@ Inventory
           {% csrf_token %}
           <div class="form-group">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-6 mx-auto">
                 <div class="form-group">
                   <label for="id_barcode" class="bmd-label-floating">Barcode</label>
                   {% render_field form.barcode class="form-control h5 font-weight-bold" %}
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="id_category" style="font-size: .75em">Category</label>
-                  {% render_field form.category class="form-control font-weight-bold" %}
                 </div>
               </div>
             </div>
@@ -187,6 +185,12 @@ Inventory
     $('#prodModalButton').trigger('click');
     $('#form_ctrl').val(localStorage.getItem("globalProdPK"));
   {% endif %}
+  $("#input_search").on("keyup search", function() {
+    var value = $(this).val().toLowerCase();
+    $(".product_list tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
 {% endblock readyScript %}
 
 {% block normalScript %}
@@ -195,7 +199,7 @@ Inventory
     $('#deletey').attr("href", urla);
   }
 
-  function newEditProduct(pk, barcode, name, description, size, qty_stock, price, category) {
+  function newEditProduct(pk, barcode, name, description, size, qty_stock, price) {
     if (pk == "new" ) {
       localStorage.setItem("globalProdPK", 'new_item');
       $('#new_edit_modal_prod').text("New");
@@ -205,10 +209,9 @@ Inventory
       $('#id_size').val("");
       $('#id_qty_stock').val("");
       $('#id_price').val("");
-      $('#id_category').prop("selectedIndex", 0);
       $('#form_ctrl').val('new_item');
     } else {
-      localStorage.setItem("globalProdPK", pk.toString());
+      localStorage.setItem("globalProdPK", pk);
       $('#new_edit_modal_prod').text("Edit");
       $('#id_barcode').val(barcode);
       $('#id_name').val(name);
@@ -216,8 +219,23 @@ Inventory
       $('#id_size').val(size);
       $('#id_qty_stock').val(qty_stock);
       $('#id_price').val(price);
-      $('#id_category').prop("selectedIndex", category);
       $('#form_ctrl').val(pk);
     }
   }
+
+  function fetch_product(barcode) {
+    fetch('http://127.0.0.1:8000/inventory/get_product/' + barcode)
+    .then(response => response.json())
+    .then($('#prodModalButton').trigger('click'))
+    .then(
+      data => newEditProduct(data['fields'].pk, data['fields'].barcode, data['fields'].name, data['fields'].description, data['fields'].size, data['fields'].qty_stock, data['fields'].price)
+    ).catch($("#id_barcode").val(barcode));
+  }
+
+  $("#add_edit_form").submit(function(e){
+    e.preventDefault();
+    bcode = $("#input_fetch").val();
+    console.log(bcode);
+    fetch_product(bcode);
+  });
 {% endblock normalScript %}

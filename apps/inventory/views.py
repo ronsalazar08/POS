@@ -1,7 +1,10 @@
+import json
+from django.http import JsonResponse
+from django.core import serializers
+
 from django.db.models import Q
 from django.contrib import messages
-from django.shortcuts import render, redirect
-
+from django.shortcuts import render, redirect, HttpResponse
 from .models import *
 from .forms import *
 
@@ -9,7 +12,6 @@ from .forms import *
 def inventory(request):
     products = Product.objects.all()
     form = ProductForm()
-    category_form = CategoryForm()
     if request.method == "POST":
         form_ctrl = request.POST.get('form_ctrl')
         if form_ctrl == "new_item":
@@ -17,12 +19,6 @@ def inventory(request):
             if form.is_valid():
                 form.save()
                 messages.success(request, f'Item <span class="text-primary">{form.cleaned_data["name"].upper()}</span> Successfully Added!')
-                return redirect('inventory')
-        elif form_ctrl == "new_category":
-            category_form = CategoryForm(request.POST)
-            if category_form.is_valid():
-                form.save()
-                messages.success(request, f'Category <span class="text-primary">{form.cleaned_data["name"].upper()}</span> Successfully Added!')
                 return redirect('inventory')
         else:
             pk = form_ctrl
@@ -34,7 +30,6 @@ def inventory(request):
     context = {
         'products' : products,
         'form'  : form,
-        'category_form'  : category_form,
     }
     return render(request, 'inventory/inventory.html', context)
 
@@ -48,3 +43,15 @@ def delete_product(request, pk):
         messages.warning(request, f"Product Don't exist!")
     
     return redirect('inventory')
+
+
+def get_product(request, barcode):
+    # try:
+    prod = Product.objects.get(barcode=barcode)
+    data = serializers.serialize('json', [prod,])
+    struct = json.loads(data)
+    data = json.dumps(struct[0])
+    return HttpResponse(data)
+    # except:
+    #     return JsonResponse({'info': False})
+

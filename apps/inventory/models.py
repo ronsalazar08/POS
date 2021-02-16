@@ -1,17 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
-
-class Category(models.Model):
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=50)    
-
-    class Meta:
-        verbose_name = ("category")
-        verbose_name_plural = ("categories")
-
-    def __str__(self):
-        return self.name
-
 
 class Product(models.Model):
     barcode = models.CharField(max_length=50, unique=True)
@@ -20,7 +7,6 @@ class Product(models.Model):
     size = models.CharField(max_length=50, default='')
     qty_stock = models.IntegerField(default=0)
     price = models.FloatField(default=0)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         verbose_name = ("product")
