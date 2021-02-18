@@ -11,6 +11,7 @@ from .forms import *
 
 def inventory(request):
     products = Product.objects.all()
+    list_of_needed_prod = products.filter(qty_stock__lte=4).order_by('name')
     form = ProductForm()
     if request.method == "POST":
         form_ctrl = request.POST.get('form_ctrl')
@@ -30,6 +31,7 @@ def inventory(request):
     context = {
         'products' : products,
         'form'  : form,
+        'list_of_needed_prod' : list_of_needed_prod,
     }
     return render(request, 'inventory/inventory.html', context)
 
@@ -46,12 +48,11 @@ def delete_product(request, pk):
 
 
 def get_product(request, barcode):
-    # try:
-    prod = Product.objects.get(barcode=barcode)
-    data = serializers.serialize('json', [prod,])
-    struct = json.loads(data)
-    data = json.dumps(struct[0])
-    return HttpResponse(data)
-    # except:
-    #     return JsonResponse({'info': False})
-
+    try:
+        prod = Product.objects.get(barcode=barcode)
+        data = serializers.serialize('json', [prod,])
+        struct = json.loads(data)
+        data = json.dumps(struct[0])
+        return HttpResponse(data)
+    except:
+        return HttpResponse({'info': False})

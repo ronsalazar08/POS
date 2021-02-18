@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+POS
+{% endblock title %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="row ml-auto">
+      <div class="card mb-1">
+        <div class="card-header card-header-icon card-header-info" style="width: 8em;">
+          <div class="card-icon text-center">
+            <i class="material-icons" style="font-size: 2em;">monitor</i>
+          </div>
+        </div>
+        <div class="card-body" style="height: 40vh;">
+        </div>
+      </div>
+    </div>
+    <div class="row ml-auto">
+      <div class="card">
+        <div class="card-header card-header-icon card-header-danger" style="width: 8em;">
+          <div class="card-icon text-center">
+            <i class="material-icons" style="font-size: 2em;">qr_code</i>
+          </div>
+        </div>
+        <div class="card-body" style="height: 24.5vh;">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header card-header-icon card-header-success" style="width: 8em;">
+        <div class="card-icon text-center">
+          <i class="material-icons" style="font-size: 2em;">receipt_long</i>
+        </div>
+      </div>
+      <div class="card-body" style="height: calc(100vh - 185px);">
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block readyScript %}
+  {% if form.errors.items|length > 0 %}
+  {% endif %}
+  $("#test_btn").click(function () {
+      var data_test = [ 
+             {"barcode": "1234567892", "name": "KOPIKa BLNC TP", "description": "Kopiko Blanca Twin-Packa", "size": "36mg", "qty_stock": 3, "price": 12.17},
+             {"barcode": "1234567893", "name": "KOPIKi BLNC TP", "description": "Kopiko Blanca Twin-Packi", "size": "37mg", "qty_stock": 4, "price": 13.17}
+         ];
+    fetch('/pos/posa/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify(data_test)
+    })
+    .then((response) => {
+      console.log(response)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  });
+{% endblock readyScript %}
+
+{% block normalScript %}
+
+{% endblock normalScript %}

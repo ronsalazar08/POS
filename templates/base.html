@@ -58,7 +58,7 @@ The above copyright notice and this permission notice shall be included in all c
                 <h6 class="dropdown-header">Menu</h6>
                 <a href="{% url 'dashboard' %}" class="dropdown-item"><i class="material-icons">dashboard</i> &nbsp; Dashboard</a>
                 {% if user.is_superuser %} <a href="{% url 'employee' %}" class="dropdown-item"><i class="material-icons">person</i> &nbsp; Employee</a>{% endif %}
-                <a href="javascript:;" class="dropdown-item"><i class="material-icons">point_of_sale</i> &nbsp; POS</a>
+                <a href="{% url 'pos' %}" class="dropdown-item"><i class="material-icons">point_of_sale</i> &nbsp; POS</a>
                 <a href="{% url 'inventory' %}" class="dropdown-item"><i class="material-icons">inventory</i> &nbsp; Inventory</a>
                 <a href="javascript:;" class="dropdown-item"><i class="material-icons">bar_chart</i> &nbsp; Sales</a>
                 <div class="dropdown-divider"></div>
@@ -98,6 +98,10 @@ The above copyright notice and this permission notice shall be included in all c
                   {% if message.tags|filter_messages == "success" %}
                     <div>
                       <i style="font-size:7em;" class="material-icons text-success">check_circle</i>
+                    </div>
+                  {% else %}
+                    <div>
+                      <i style="font-size:7em;" class="material-icons text-info">info</i>
                     </div>
                   {% endif %}
                   <div class="h2 m-0 p-0">{{ message|safe }}</div>
@@ -161,6 +165,9 @@ The above copyright notice and this permission notice shall be included in all c
           $('#alertModalButton').trigger('click');
           setTimeout(function(){
             $('#alertModal').modal('hide');
+            if ($('#input_fetch').length){
+              $('#input_fetch').focus();
+            }
           }, 2500);
         {% endif %}
 
@@ -181,7 +188,7 @@ The above copyright notice and this permission notice shall be included in all c
         });
 
         <!--focus on modal show-->
-        $('.modal').on('shown.bs.modal', function () {
+        $(".modal").on('shown.bs.modal', function () {
           $('input:text:visible:first', this).focus();
         });
 

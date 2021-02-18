@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'src',
     'apps.employee',
     'apps.inventory',
+    'apps.pos',
     
 ]
 

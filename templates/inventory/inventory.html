@@ -10,15 +10,21 @@ Inventory
 <div class="row">
   <div class="col-md-10">
     <div class="card card-nav-tabs">
-      <div class="card-header card-header-primary">
+      <div class="card-header card-header-rose">
         <h4><i class="material-icons" >library_books</i> List of Products
-          <form id="add_edit_form" >
-            <input type="text" id="input_fetch" placeholder="add or edit.." class="textinput textInput form-control" autofocus>
-            <button type="submit" class="d-none">submit</button>
-          </form>
-          <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" {% comment %}style="position:absolute; top:-16px; right:25px;"{% endcomment %} data-toggle="modal" data-target="#newEditProductModal" onclick="newEditProduct('new')">
+          {% comment %} <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" data-toggle="modal" data-target="#newEditProductModal" onclick="newEditProduct('new')">
             Add / Edit Product &nbsp; <i class="material-icons">queue</i>
-          </button>
+          </button> {% endcomment %}
+          {% comment %} <form id="add_edit_form" class="float-right" >
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <i class="material-icons text-light">qr_code_scanner</i>
+                </span>
+              </div>
+              <input type="text" class="border-bottom text-light" id="input_fetch" placeholder="SCAN or ENTER Barcode" style="font-size: 14px; border: 0; background: none;" autofocus>
+            </div>
+          </form> {% endcomment %}
         </h4>
       </div>
       {% comment %} <div class="card-body" style="height:535px; overflow: auto;"> {% endcomment %}
@@ -40,8 +46,8 @@ Inventory
             {% for product in products %}
               <tr>
                 <td>{{ product.barcode }}</td>
-                <td>{{ product.name }}</td>
-                <td style="max-width: 200px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">{{ product.description }}</td>
+                <td>{{ product.name|title }}</td>
+                <td style="max-width: 200px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">{{ product.description|title }}</td>
                 <td>{{ product.size }}</td>
                 <td class="text-center">
                   <span class="p-2 border rounded
@@ -55,7 +61,7 @@ Inventory
                   >{{ product.qty_stock }}</span></td>
                 <td>&#8369; {{ product.price }}</td>
                 <td class="text-center pl-0 pr-0">
-                  <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-info" data-toggle="modal" data-tooltip="tooltip" title="Edit" data-target="#newEditProductModal" onclick="newEditProduct({{product.pk}}, '{{product.barcode}}', '{{product.name}}', '{{product.description}}', '{{product.size}}', {{product.qty_stock}}, {{product.price}}, '{{product.category.pk}}')">
+                  <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-info" data-toggle="modal" data-tooltip="tooltip" title="Edit" data-target="#newEditProductModal" onclick="newEditProduct({{product.pk}}, '{{product.barcode}}', '{{product.name}}', '{{product.description}}', '{{product.size}}', {{product.qty_stock}}, {{product.price}})">
                     <i class="material-icons">edit</i>
                   </button type="button">
                 </td>
@@ -77,10 +83,50 @@ Inventory
       </div>
     </div>
   </div>
-  <div class="col-md-2">    
-    <div class="card shadow-lg" style="border-radius:10px;">
-      <div class="card-body">
-        <input type="search" id="input_search" placeholder="Search.." class="textinput textInput form-control" autofocus>
+  <div class="col-md-2">
+    <div class="row mr-auto h-50" >
+      <div class="card">
+        <div class="card-header card-header-icon card-header-primary">
+          <div class="card-icon text-center">
+            <i class="material-icons" style="font-size: 3.3em;">qr_code</i>
+          </div>
+        </div>
+        <div class="card-body">
+          <h4 class="text-center">ADD or EDIT PRODUCT</h4>
+          <div class="form-group">
+            <form id="add_edit_form">
+              <label for="input_fetch" class="bmd-label-floating">BARCODE</label>
+              <input type="text" id="input_fetch" class="form-control" autofocus>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mr-auto h-50">
+      <div class="card">
+        <div class="card-header card-header-icon card-header-danger">
+          <div class="card-icon text-center">
+            <i class="material-icons" style="font-size: 3.3em;">report</i>
+          </div>
+        </div>
+        <div class="card-body pl-3 pr-3" style="height: 0; overflow-y: auto !important;">
+          {% for prod in list_of_needed_prod %}
+            <p class="border-bottom" style="white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">&bull; 
+              <a href="#" class="
+                {% if prod.qty_stock < 5 and prod.qty_stock > 0 %}
+                  text-warning
+                {% elif prod.qty_stock <= 0  %}
+                  text-danger
+                {% endif %}
+              " 
+              data-toggle="modal" data-target="#newEditProductModal"
+              onclick="newEditProduct({{prod.pk}}, '{{prod.barcode}}', '{{prod.name}}', '{{prod.description}}', '{{prod.size}}', {{prod.qty_stock}}, {{prod.price}}); "
+              >
+                {{ prod|title }} - {{prod.size}}
+              </a>
+            </p>
+          {% endfor %}
+        </div>
       </div>
     </div>
   </div>
@@ -181,6 +227,7 @@ Inventory
 {% endblock content %}
 
 {% block readyScript %}
+  {% comment %} console.log(localStorage.getItem("globalProdPK")); {% endcomment %}
   {% if form.errors.items|length > 0 %}
     $('#prodModalButton').trigger('click');
     $('#form_ctrl').val(localStorage.getItem("globalProdPK"));
@@ -228,14 +275,17 @@ Inventory
     .then(response => response.json())
     .then($('#prodModalButton').trigger('click'))
     .then(
-      data => newEditProduct(data['fields'].pk, data['fields'].barcode, data['fields'].name, data['fields'].description, data['fields'].size, data['fields'].qty_stock, data['fields'].price)
-    ).catch($("#id_barcode").val(barcode));
+      data => newEditProduct(data['pk'], data['fields'].barcode, data['fields'].name, data['fields'].description, data['fields'].size, data['fields'].qty_stock, data['fields'].price)
+    ).catch(function() {
+      newEditProduct('new');
+      $("#id_barcode").val(barcode);
+    });
   }
 
   $("#add_edit_form").submit(function(e){
     e.preventDefault();
     bcode = $("#input_fetch").val();
-    console.log(bcode);
+    {% comment %} console.log(bcode); {% endcomment %}
     fetch_product(bcode);
   });
 {% endblock normalScript %}
