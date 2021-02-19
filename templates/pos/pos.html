@@ -8,39 +8,51 @@ POS
 
 {% block content %}
 
-<div class="row">
+<div id="posapp" class="row" style="height: calc(100vh - 90px); overflow: auto;">
   <div class="col-md-8">
-    <div class="row ml-auto">
-      <div class="card mb-1">
+    <div class="row m-auto h-75">
+      <div class="card">
         <div class="card-header card-header-icon card-header-info" style="width: 8em;">
           <div class="card-icon text-center">
             <i class="material-icons" style="font-size: 2em;">monitor</i>
           </div>
         </div>
-        <div class="card-body" style="height: 40vh;">
+        <div class="card-body">
+          <div class="row border border-danger h-100 text-center" v-for="product in product_display">
+            <p>[[product.name]]</p>
+            <p>[[product.description]]</p>
+            <p>[[product.price]]</p>
+          </div>
         </div>
       </div>
     </div>
-    <div class="row ml-auto">
+    <div class="row m-auto h-25">
       <div class="card">
-        <div class="card-header card-header-icon card-header-danger" style="width: 8em;">
+        <div class="card-header card-header-icon card-header-warning" style="width: 8em;">
           <div class="card-icon text-center">
             <i class="material-icons" style="font-size: 2em;">qr_code</i>
           </div>
         </div>
-        <div class="card-body" style="height: 24.5vh;">
+        <div class="card-body pt-0 pb-0">
+          <div class="form-group has-success mx-auto w-75 pt-0 pb-0">
+            <form v-on:submit.prevent="search_barcode()">
+              <input v-model="barcode_input" type="text" class="h2 mt-0 mb-0 pt-0 pb-0 text-center form-control" autofocus />
+            </form>
+          </div>
         </div>
       </div>
     </div>
   </div>
   <div class="col-md-4">
-    <div class="card">
-      <div class="card-header card-header-icon card-header-success" style="width: 8em;">
-        <div class="card-icon text-center">
-          <i class="material-icons" style="font-size: 2em;">receipt_long</i>
+    <div class="row m-auto h-100">
+      <div class="card">
+        <div class="card-header card-header-icon card-header-success" style="width: 8em;">
+          <div class="card-icon text-center">
+            <i class="material-icons" style="font-size: 2em;">receipt_long</i>
+          </div>
         </div>
-      </div>
-      <div class="card-body" style="height: calc(100vh - 185px);">
+        <div class="card-body">
+        </div>
       </div>
     </div>
   </div>
@@ -77,3 +89,46 @@ POS
 {% block normalScript %}
 
 {% endblock normalScript %}
+
+
+{% block vueScript %}
+  <script>
+    new Vue({
+      el: "#posapp",
+      delimiters: ['[[', ']]'],
+      data () {
+        return {
+          all_products: [],
+          scanned_products: [],
+          product_display: [],
+          barcode_input: ''
+        }
+      },
+      methods: {
+        api_all_product() {
+          fetch("{% url 'api_all_product' %}")
+          .then(response => response.json())
+          .then(data => {
+            this.all_products = data;
+            console.log(this.all_products);
+          });
+        },
+
+        search_barcode() {
+          if (this.barcode_input.length > 0) {
+            console.log(this.barcode_input)
+            for(var i = 0; i < this.all_products.length; i++) {
+              if(this.all_products[i].barcode == this.barcode_input) {
+                this.product_display.unshift(this.all_products[i]);
+              }
+            }
+            console.log(this.product_display)
+          }
+        }
+      },
+      beforeMount(){
+          this.api_all_product()
+      },
+    })
+  </script>
+{% endblock vueScript %}

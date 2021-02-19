@@ -7,7 +7,7 @@ Inventory
 {% endblock title %}
 
 {% block content %}
-<div class="row">
+<div class="row" style="height: calc(100vh - 185px);">
   <div class="col-md-10">
     <div class="card card-nav-tabs">
       <div class="card-header card-header-rose">
@@ -84,7 +84,7 @@ Inventory
     </div>
   </div>
   <div class="col-md-2">
-    <div class="row mr-auto h-50" >
+    <div class="row m-auto h-50" >
       <div class="card">
         <div class="card-header card-header-icon card-header-primary">
           <div class="card-icon text-center">
@@ -102,14 +102,14 @@ Inventory
         </div>
       </div>
     </div>
-    <div class="row mr-auto h-50">
+    <div class="row m-auto h-50">
       <div class="card">
         <div class="card-header card-header-icon card-header-danger">
           <div class="card-icon text-center">
             <i class="material-icons" style="font-size: 3.3em;">report</i>
           </div>
         </div>
-        <div class="card-body pl-3 pr-3" style="height: 0; overflow-y: auto !important;">
+        <div class="card-body pl-3 pr-3" style="overflow-y: auto !important;">
           {% for prod in list_of_needed_prod %}
             <p class="border-bottom" style="white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">&bull; 
               <a href="#" class="
@@ -135,7 +135,7 @@ Inventory
 <!-- New/Edit Product Modal -->
 <button id="prodModalButton" data-toggle="modal" data-target="#newEditProductModal" style="display:none;"></button>
 <div class="modal fade" id="newEditProductModal" tabindex="-1" aria-labelledby="newProductModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="modal-title"><i class="material-icons">queue</i> <span id="new_edit_modal_prod"></span> Product</h3> 
@@ -148,7 +148,7 @@ Inventory
           {% csrf_token %}
           <div class="form-group">
             <div class="row">
-              <div class="col-md-6 mx-auto">
+              <div class="col-md-12">
                 <div class="form-group">
                   <label for="id_barcode" class="bmd-label-floating">Barcode</label>
                   {% render_field form.barcode class="form-control h5 font-weight-bold" %}
@@ -156,7 +156,7 @@ Inventory
               </div>
             </div>
             <div class="row">
-              <div class="col-md-6 mx-auto">
+              <div class="col-md-12">
                 <div class="form-group">
                   <label for="id_name" class="bmd-label-floating ">Name</label>
                   {% render_field form.name class="form-control h5 font-weight-bold" %}

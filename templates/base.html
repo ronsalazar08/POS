@@ -153,8 +153,10 @@ The above copyright notice and this permission notice shall be included in all c
     <!-- Control Center for Material Kit: parallax effects, scripts for the example pages etc -->
     <script src="{% static 'assets/js/material-kit.js' %}" type="text/javascript"></script>
 
-    {% comment %} <!--Vue script-->
-    <script src="{% static 'vue.js' %}"></script> {% endcomment %}
+    <!--Vue script-->
+    <script src="{% static 'vue.js' %}"></script>
+    {% block vueScript %}
+    {% endblock vueScript %}
     <script>
       $(document).ready(function() {
         <!--show tooltip-->
