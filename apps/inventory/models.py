@@ -14,3 +14,10 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        for field_name in ['name', 'description',]:
+            val = getattr(self, field_name, False)
+            if val:
+                setattr(self, field_name, val.upper())
+        super(Product, self).save(*args, **kwargs)

@@ -8,10 +8,10 @@ Inventory
 
 {% block content %}
 <div class="row" style="height: calc(100vh - 185px);">
-  <div class="col-md-10">
+  <div class="col-md-9">
     <div class="card card-nav-tabs">
       <div class="card-header card-header-rose">
-        <h4><i class="material-icons" >library_books</i> List of Products
+        <h4><i class="material-icons align-middle" >library_books</i> List of Products
           {% comment %} <button class="btn btn-white btn-sm mr-2 ml-2 text-primary float-right" data-toggle="modal" data-target="#newEditProductModal" onclick="newEditProduct('new')">
             Add / Edit Product &nbsp; <i class="material-icons">queue</i>
           </button> {% endcomment %}
@@ -46,8 +46,8 @@ Inventory
             {% for product in products %}
               <tr>
                 <td>{{ product.barcode }}</td>
-                <td>{{ product.name|title }}</td>
-                <td style="max-width: 200px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">{{ product.description|title }}</td>
+                <td style="max-width: 150px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">{{ product.name }}</td>
+                <td style="max-width: 150px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">{{ product.description }}</td>
                 <td>{{ product.size }}</td>
                 <td class="text-center">
                   <span class="p-2 border rounded
@@ -83,12 +83,12 @@ Inventory
       </div>
     </div>
   </div>
-  <div class="col-md-2">
+  <div class="col-md-3">
     <div class="row m-auto h-50" >
       <div class="card">
         <div class="card-header card-header-icon card-header-primary">
           <div class="card-icon text-center">
-            <i class="material-icons" style="font-size: 3.3em;">qr_code</i>
+            <i class="material-icons" style="font-size: 2.8em;">qr_code</i>
           </div>
         </div>
         <div class="card-body">
@@ -106,7 +106,7 @@ Inventory
       <div class="card">
         <div class="card-header card-header-icon card-header-danger">
           <div class="card-icon text-center">
-            <i class="material-icons" style="font-size: 3.3em;">report</i>
+            <i class="material-icons" style="font-size: 2.8em;">report</i>
           </div>
         </div>
         <div class="card-body pl-3 pr-3" style="overflow-y: auto !important;">
@@ -138,7 +138,7 @@ Inventory
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title"><i class="material-icons">queue</i> <span id="new_edit_modal_prod"></span> Product</h3> 
+        <h3 class="modal-title"><i class="material-icons align-middle">queue</i> <span id="new_edit_modal_prod"></span> Product</h3> 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -209,7 +209,7 @@ Inventory
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title mt-0"><i class="material-icons">delete_sweep</i> Delete Product</h3> 
+        <h3 class="modal-title mt-0"><i class="material-icons align-middle">delete_sweep</i> Delete Product</h3> 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

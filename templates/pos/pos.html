@@ -8,36 +8,108 @@ POS
 
 {% block content %}
 
-<div id="posapp" class="row" style="height: calc(100vh - 90px); overflow: auto;">
+<div id="posapp" class="row" style="height: calc(100vh - 70px); overflow: auto;" @keyup="keymonitor">
   <div class="col-md-8">
-    <div class="row m-auto h-75">
+    <div class="row m-auto " style="height: 60%;">
       <div class="card">
-        <div class="card-header card-header-icon card-header-info" style="width: 8em;">
+        <div class="card-header card-header-icon card-header-danger" style="width: 8em;">
           <div class="card-icon text-center">
             <i class="material-icons" style="font-size: 2em;">monitor</i>
           </div>
         </div>
-        <div class="card-body">
-          <div class="row border border-danger h-100 text-center" v-for="product in product_display">
-            <p>[[product.name]]</p>
-            <p>[[product.description]]</p>
-            <p>[[product.price]]</p>
+        <div class="card-body p-0">
+          <div class="row" v-if="barcode_error.length > 0">
+            <h1 class="text-danger text-center w-100"><i class="material-icons" style="font-size: 3em;">new_releases</i> <br> [[barcode_error]] </h1>
           </div>
-        </div>
+          <div class="row h-100" v-for="product in product_display" v-else>
+            <div class="row w-100 mx-auto p-2">
+              <div class="col-md-12 align-items-center text-center">
+                <div class="h-100 border border-dark rounded text-left pl-3 pr-3">
+                  <h2 style="white-space: nowrap; overflow:hidden; text-overflow: ellipsis; font-weight:bold; "> [[ product.name ]] </h2>
+                  <h3 style="white-space: nowrap; overflow:hidden; text-overflow: ellipsis;"> [[ product.description ]] </h3>
+                </div>
+              </div>
+            </div>
+            <div class="row w-100 mx-auto p-2">
+              {% comment %} <div class="col-md-3 align-items-center text-center">
+                <div class="h-100 border border-dark rounded">
+                  <h5 style="font-size: 1em;"><i class="material-icons align-middle" style="font-size: 1em;">qr_code</i> [[ product.barcode ]]</h5>
+                  <h5 style="font-size: 1em;"><i class="material-icons align-middle" style="font-size: 1em;">inventory</i> [[ product.qty_stock ]] in STOCK</h5>
+                </div>
+              </div> {% endcomment %}
+              <div class="col-md-5 align-items-center text-center">
+                <div class="h-100 border border-dark rounded d-flex align-items-center">
+                  <div style="font-weight:bold;" class="h1 w-100 text-center">x [[ scan_qty ]]</div>
+                </div>
+              </div>
+              <div class="col-md-7 align-items-center text-center">
+                <div class="h-100 border border-dark rounded d-flex align-items-center">
+                  <div style="font-weight:bold;" class="h1 w-100 text-right pr-3">&#8369; [[ product.price * scan_qty ]]</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>  
       </div>
     </div>
-    <div class="row m-auto h-25">
+    <div class="row m-auto" style="height: 40%;">
       <div class="card">
-        <div class="card-header card-header-icon card-header-warning" style="width: 8em;">
+        <div class="card-header card-header-icon card-header-success ml-auto" style="width: 8em;">
           <div class="card-icon text-center">
             <i class="material-icons" style="font-size: 2em;">qr_code</i>
           </div>
         </div>
-        <div class="card-body pt-0 pb-0">
-          <div class="form-group has-success mx-auto w-75 pt-0 pb-0">
-            <form v-on:submit.prevent="search_barcode()">
-              <input v-model="barcode_input" type="text" class="h2 mt-0 mb-0 pt-0 pb-0 text-center form-control" autofocus />
-            </form>
+        <div class="card-body pt-0">
+          <div class="row h-100">
+            <div class="col-5">
+              <button class="btn btn-danger p-1" style="width: 5.9em;">
+                <i class="material-icons">queue</i>
+                <br>
+                {% comment %} <i class="text-info">(F2)</i> {% endcomment %}
+                NEW<br>PRODUCT
+              </button>
+              <button class="btn btn-info p-1" style="width: 5.9em;">
+                <i class="material-icons">undo</i>
+                <br>VOID<br>ITEM
+              </button>
+              <button class="btn btn-warning p-1" style="width: 5.9em;">
+                <i class="material-icons">queue</i>
+                <br>NEW<br>PRODUCT
+              </button>
+              <br>
+              <button class="btn btn-rose p-1" style="width: 5.9em;">
+                <i class="material-icons">undo</i>
+                <br>VOID<br>ITEM
+              </button>
+              <button class="btn btn-light p-1" style="width: 5.9em;">
+                <i class="material-icons">queue</i>
+                <br>NEW<br>PRODUCT
+              </button>
+              <button class="btn btn-success p-1" style="width: 5.9em;">
+                <i class="material-icons">undo</i>
+                <br>VOID<br>ITEM
+              </button>
+            </div>
+            {% comment %} <div class="col-7 d-flex align-items-end flex-column"> {% endcomment %}
+            <div class="col-7">
+              <div class="row h-50">
+                <div class="w-100 mx-auto p-2" v-for="product in product_display">
+                  <div class="col-md-12">
+                    <div class="h-100 border border-dark rounded pt-0 pb-0">
+                      <h5 style="font-size: 1em;" class="m-0"><i class="material-icons align-middle">qr_code</i> [[ product.barcode ]]</h5>
+                      <h5 style="font-size: 1em;" class="m-0"><i class="material-icons align-middle">inventory</i> [[ product.qty_stock ]] in STOCK</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row h-50">
+                <div class="form-group has-success">
+                  <form v-on:submit.prevent="search_barcode()">
+                    <input v-model="barcode_input" type="text" ref="barcode_input" class="h2 mt-0 mb-0 pt-0 pb-0 text-center form-control" autofocus placeholder="SCAN BARCODE" />
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -46,23 +118,45 @@ POS
   <div class="col-md-4">
     <div class="row m-auto h-100">
       <div class="card">
-        <div class="card-header card-header-icon card-header-success" style="width: 8em;">
+        <div class="card-header card-header-icon card-header-warning" style="width: 8em;">
           <div class="card-icon text-center">
             <i class="material-icons" style="font-size: 2em;">receipt_long</i>
           </div>
         </div>
         <div class="card-body">
+          <div class="row border-bottom" style="height:80%; overflow-y: auto;" ref="receipt_box" v-bind:style="leftColStyles">
+            <ul class="w-100 pl-3 pr-4">
+              <li v-for="item in scanned_products">
+                <div class="row border-top">
+                  <div class="col-8 pr-0 ">
+                    <div style="min-width: 168px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">
+                      [[ item.name ]]
+                    </div>
+                    <div>
+                      [[ item.size ]] <span class="float-right" v-if="item.qty > 1">&#8369;[[ item.price ]] x [[ item.qty ]] pcs</span>
+                    </div>
+                  </div>
+                  <div class="col-4 text-right pl-0 pr-0">
+                    &#8369;[[ item.total_price ]]
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="row border-top" style="height: 20%;">
+              <h5 class="m-0 p-0">TOTAL:</h5>
+              <h1 class="w-100 m-0 p-0 text-right" style="font-weight:bold;">&#8369; [[ total_transaction_price.toLocaleString() ]]</h1>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+  
 
+</div>
 {% endblock content %}
 
 {% block readyScript %}
-  {% if form.errors.items|length > 0 %}
-  {% endif %}
   $("#test_btn").click(function () {
       var data_test = [ 
              {"barcode": "1234567892", "name": "KOPIKa BLNC TP", "description": "Kopiko Blanca Twin-Packa", "size": "36mg", "qty_stock": 3, "price": 12.17},
@@ -86,10 +180,6 @@ POS
   });
 {% endblock readyScript %}
 
-{% block normalScript %}
-
-{% endblock normalScript %}
-
 
 {% block vueScript %}
   <script>
@@ -100,8 +190,13 @@ POS
         return {
           all_products: [],
           scanned_products: [],
+          total_transaction_price: 0.00,
           product_display: [],
-          barcode_input: ''
+          barcode_input: '',
+          barcode_error: '',
+          scan_qty: 1,
+          scan_quantity_holder: false,
+          leftColStyles: { },
         }
       },
       methods: {
@@ -116,19 +211,63 @@ POS
 
         search_barcode() {
           if (this.barcode_input.length > 0) {
-            console.log(this.barcode_input)
+            this.barcode_error = ''
+            this.product_display.splice(0)
+            if (this.barcode_input.toLowerCase().includes('x')) {
+              this.scan_quantity_holder = true
+              let temp_bcode = this.barcode_input.toLowerCase().split('x')
+              this.barcode_input = temp_bcode[1]
+              this.scan_qty = temp_bcode[0]
+            }
+            if (this.scan_quantity_holder == false || this.scan_qty == '' || this.scan_qty == '0') {
+              this.scan_qty = 1;
+            }
             for(var i = 0; i < this.all_products.length; i++) {
               if(this.all_products[i].barcode == this.barcode_input) {
-                this.product_display.unshift(this.all_products[i]);
+                this.product_display.unshift(this.all_products[i])
+                let temp_product = {...this.all_products[i]}
+                temp_product.qty = this.scan_qty
+                temp_product.total_price = temp_product.qty * temp_product.price
+                this.total_transaction_price += temp_product.total_price
+                this.scanned_products.push(temp_product)
+                this.barcode_input = ''
               }
             }
-            console.log(this.product_display)
+            if (this.product_display.length == 0) {
+              this.barcode_error = 'BARCODE NOT REGISTERED'
+              this.barcode_input = ''
+              setTimeout(() => {this.barcode_error = ''}, 2000)
+            }
+            this.scan_quantity_holder = false
           }
-        }
+        },
+
+        keymonitor(event) {
+          if (event.key == 'F2') {
+            this.$refs.change_scan_qty.click()
+          }
+        },
+
+        matchHeight() {
+          var heightString = this.$refs.receipt_box.clientHeight + 'px';
+          Vue.set(this.leftColStyles, 'height', heightString); 
+        },
+    
+        scrollToEnd() {
+          var receipt_box = this.$refs.receipt_box;
+          receipt_box.scrollTop = receipt_box.scrollHeight;
+        },
+        
       },
       beforeMount(){
           this.api_all_product()
       },
+      updated () {
+        this.scrollToEnd();	
+      },
+      mounted() {
+        this.matchHeight();
+      }
     })
   </script>
 {% endblock vueScript %}

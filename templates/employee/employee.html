@@ -11,9 +11,9 @@ Employee
   <div class="col-md-9 mx-auto">
     <div class="card card-nav-tabs">
       <div class="card-header card-header-primary">
-        <h4><i class="material-icons" >group</i> List of Employees
+        <h4><i class="material-icons align-middle" >group</i> List of Employees
           <button class="btn btn-white text-primary float-right btn-sm" data-toggle="modal" data-target="#newEmployeeModal" onclick="employeeAddEdit('new')">
-            New Employee &nbsp; <i class="material-icons">person_add</i>
+            New Employee &nbsp; <i class="material-icons align-middle">person_add</i>
           </button>
         </h4>
       </div>
@@ -36,8 +36,8 @@ Employee
                 <tr>
                   <td class="fw-bold">{{forloop.counter}}.</td>
                   <td class="fw-bold">{{user.username}}</td>
-                  <td class="fw-bold">{{user.first_name}}</td>
-                  <td class="fw-bold">{{user.last_name}}</td>
+                  <td class="fw-bold">{{user.first_name|title}}</td>
+                  <td class="fw-bold">{{user.last_name|title}}</td>
                   <td class="fw-bold {% if user.is_staff == True %} text-success">&#10003;{% else %} text-danger">&#10007;{% endif %}</td>
                   <td class="fw-bold {% if user.is_active == True %} text-success">&#10003;{% else %} text-danger">&#10007;{% endif %}</td>
                   {% if user.username == "admin" %}
@@ -70,7 +70,7 @@ Employee
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title"><i class="material-icons">person</i> <span id="new_edit_modal_emp"></span> Employee</h3> 
+          <h3 class="modal-title"><i class="material-icons align-middle">person</i> <span id="new_edit_modal_emp"></span> Employee</h3> 
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -155,10 +155,10 @@ Employee
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title mt-0"><i class="material-icons">person_remove</i> Delete Employee</h3> 
+          <h3 class="modal-title mt-0"><i class="material-icons align-middle">person_remove</i> Delete Employee</h3> 
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
-          </button>
+          </bu|titleton>
         </div>
         <div class="modal-body text-center">
           <div class="font-weight-bold h5" >Are you sure to <strong>Delete</strong> Employee <strong><span class="text-primary" id="delete_modal_emp"></span></strong>?</div>
