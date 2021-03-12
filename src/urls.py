@@ -18,6 +18,7 @@ urlpatterns = [
     path('employee/', include('apps.employee.urls')),
     path('inventory/', include('apps.inventory.urls')),
     path('pos/', include('apps.pos.urls')),
+    path('sales/', include('apps.sales.urls')),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
 ]

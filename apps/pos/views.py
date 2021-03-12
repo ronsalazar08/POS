@@ -6,9 +6,7 @@ from django.shortcuts import render, HttpResponse
 from apps.inventory.models import *
 
 def pos(request):
-    context = {
-    }
-    return render(request, 'pos/pos.html', context)
+    return render(request, 'pos/pos.html')
 
 
 def api_all_product(request):
@@ -19,12 +17,23 @@ def api_all_product(request):
     output = json.dumps(actual_data)
     return HttpResponse(output, content_type="application/json")
 
-def fetch_test(request):
+
+def post_new_edit_product(request):
     try:
         data = json.loads(request.body)
-        for i in data:
-            print(i)
-            prod = Product(**i)
+        # print(data[0])
+        # print(data[0]["barcode"])
+        try:
+            prod = Product.objects.get(barcode=data[0]["barcode"])
+            prod.barcode = data[0]["barcode"]
+            prod.name = data[0]["name"]
+            prod.description = data[0]["description"]
+            prod.size = data[0]["size"]
+            prod.qty_stock = data[0]["qty_stock"]
+            prod.price = data[0]["price"]
+            prod.save()
+        except:
+            prod = Product(**data[0])
             prod.save()
         return JsonResponse({'success': True})
     except:

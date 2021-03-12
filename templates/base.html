@@ -60,7 +60,7 @@ The above copyright notice and this permission notice shall be included in all c
                 {% if user.is_superuser %} <a href="{% url 'employee' %}" class="dropdown-item"><i class="material-icons">person</i> &nbsp; Employee</a>{% endif %}
                 <a href="{% url 'pos' %}" class="dropdown-item"><i class="material-icons">point_of_sale</i> &nbsp; POS</a>
                 <a href="{% url 'inventory' %}" class="dropdown-item"><i class="material-icons">inventory</i> &nbsp; Inventory</a>
-                <a href="javascript:;" class="dropdown-item"><i class="material-icons">bar_chart</i> &nbsp; Sales</a>
+                <a href="{% url 'home_sales' %}" class="dropdown-item"><i class="material-icons">bar_chart</i> &nbsp; Sales</a>
                 <div class="dropdown-divider"></div>
                 <a href="{% url 'logout' %}" class="dropdown-item text-danger"><i class="material-icons">logout</i> Logout</a>
               </div>
@@ -176,12 +176,24 @@ The above copyright notice and this permission notice shall be included in all c
 
         <!--prevent ctrl+p-->
         $(document).on('keydown', function(e) {
-          if(e.ctrlKey && (e.key == "p" || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80) ){
+          if((e.ctrlKey && (e.key == "p" || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80)) ||
+              //e.key == "F12" || 
+              e.key == "F3" || 
+              //e.key == "F5" || 
+              e.key == "F7" || 
+              //e.key == "F11" || 
+              //e.key == "F12" ||
+              e.key == "F6" ){
             /*prevent crtl+p*/
             e.cancelBubble = true;
             e.preventDefault();
             e.stopImmediatePropagation();
-          }  
+          } else if (e.key == "F1") {
+            e.cancelBubble = true;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            $("#barcode_input").focus();
+          }
         });
 
         <!--display press alt+f4-->

@@ -7,8 +7,7 @@ POS
 {% endblock title %}
 
 {% block content %}
-
-<div id="posapp" class="row" style="height: calc(100vh - 70px); overflow: auto;" @keyup="keymonitor">
+<div id="posapp" class="row" style="height: calc(100vh - 70px); overflow: auto;" v-on:keyup="keymonitor">
   <div class="col-md-8">
     <div class="row m-auto " style="height: 60%;">
       <div class="card">
@@ -25,26 +24,23 @@ POS
             <div class="row w-100 mx-auto p-2">
               <div class="col-md-12 align-items-center text-center">
                 <div class="h-100 border border-dark rounded text-left pl-3 pr-3">
+                  <div style="position: absolute; top: 0; left: 20px; color: gray;"> PRODUCT </div>
                   <h2 style="white-space: nowrap; overflow:hidden; text-overflow: ellipsis; font-weight:bold; "> [[ product.name ]] </h2>
                   <h3 style="white-space: nowrap; overflow:hidden; text-overflow: ellipsis;"> [[ product.description ]] </h3>
                 </div>
               </div>
             </div>
             <div class="row w-100 mx-auto p-2">
-              {% comment %} <div class="col-md-3 align-items-center text-center">
-                <div class="h-100 border border-dark rounded">
-                  <h5 style="font-size: 1em;"><i class="material-icons align-middle" style="font-size: 1em;">qr_code</i> [[ product.barcode ]]</h5>
-                  <h5 style="font-size: 1em;"><i class="material-icons align-middle" style="font-size: 1em;">inventory</i> [[ product.qty_stock ]] in STOCK</h5>
-                </div>
-              </div> {% endcomment %}
               <div class="col-md-5 align-items-center text-center">
                 <div class="h-100 border border-dark rounded d-flex align-items-center">
-                  <div style="font-weight:bold;" class="h1 w-100 text-center">x [[ scan_qty ]]</div>
+                  <div style="position: absolute; top: 0; left: 20px; color: gray;"> QUANTITY </div>
+                  <h1 style="font-weight:bold;" class="w-100 text-center">x [[ scan_qty ]]</h1>
                 </div>
               </div>
               <div class="col-md-7 align-items-center text-center">
                 <div class="h-100 border border-dark rounded d-flex align-items-center">
-                  <div style="font-weight:bold;" class="h1 w-100 text-right pr-3">&#8369; [[ product.price * scan_qty ]]</div>
+                  <div style="position: absolute; top: 0; left: 20px; color: gray;"> PRICE </div>
+                  <h1 style="font-weight:bold;" class="w-100 text-right pr-3">&#8369; [[ product.price * scan_qty ]]</h1>
                 </div>
               </div>
             </div>
@@ -62,42 +58,24 @@ POS
         <div class="card-body pt-0">
           <div class="row h-100">
             <div class="col-5">
-              <button class="btn btn-danger p-1" style="width: 5.9em;">
+              <button class="btn btn-primary p-1" style="width: 5.9em;" data-toggle="modal" data-tooltip="tooltip" title="New/Edit" data-target="#prodModal">
+                <i class="text-info">(F2)</i>
                 <i class="material-icons">queue</i>
                 <br>
-                {% comment %} <i class="text-info">(F2)</i> {% endcomment %}
-                NEW<br>PRODUCT
+                NEW/EDIT<br>PRODUCT
               </button>
-              <button class="btn btn-info p-1" style="width: 5.9em;">
-                <i class="material-icons">undo</i>
-                <br>VOID<br>ITEM
-              </button>
-              <button class="btn btn-warning p-1" style="width: 5.9em;">
-                <i class="material-icons">queue</i>
-                <br>NEW<br>PRODUCT
-              </button>
-              <br>
-              <button class="btn btn-rose p-1" style="width: 5.9em;">
-                <i class="material-icons">undo</i>
-                <br>VOID<br>ITEM
-              </button>
-              <button class="btn btn-light p-1" style="width: 5.9em;">
-                <i class="material-icons">queue</i>
-                <br>NEW<br>PRODUCT
-              </button>
-              <button class="btn btn-success p-1" style="width: 5.9em;">
-                <i class="material-icons">undo</i>
-                <br>VOID<br>ITEM
+              <button  class="btn btn-success p-1" style="width: 5.9em;" :disabled="total_transaction_price <= 0" data-toggle="modal" data-tooltip="tooltip" title="Check Out" data-target="#checkOutModal">
+                <i class="material-icons">beenhere</i>
+                <br>CHECK<br>OUT
               </button>
             </div>
-            {% comment %} <div class="col-7 d-flex align-items-end flex-column"> {% endcomment %}
             <div class="col-7">
               <div class="row h-50">
                 <div class="w-100 mx-auto p-2" v-for="product in product_display">
                   <div class="col-md-12">
                     <div class="h-100 border border-dark rounded pt-0 pb-0">
-                      <h5 style="font-size: 1em;" class="m-0"><i class="material-icons align-middle">qr_code</i> [[ product.barcode ]]</h5>
-                      <h5 style="font-size: 1em;" class="m-0"><i class="material-icons align-middle">inventory</i> [[ product.qty_stock ]] in STOCK</h5>
+                      <h5 style="font-size: 1em; font-weight: bold;" class="m-0"><i class="material-icons align-middle">qr_code</i> [[ product.barcode ]]</h5>
+                      <h5 style="font-size: 1em; font-weight: bold;" class="m-0 text-warning" v-if="product.qty_stock < 5"><i class="material-icons align-middle text-dark">inventory</i> LOW STOCK</h5>
                     </div>
                   </div>
                 </div>
@@ -105,7 +83,7 @@ POS
               <div class="row h-50">
                 <div class="form-group has-success">
                   <form v-on:submit.prevent="search_barcode()">
-                    <input v-model="barcode_input" type="text" ref="barcode_input" class="h2 mt-0 mb-0 pt-0 pb-0 text-center form-control" autofocus placeholder="SCAN BARCODE" />
+                    <input v-model="barcode_input" type="text" id="barcode_input" ref="barcode_input" class="h2 mt-0 mb-0 pt-0 pb-0 text-center form-control" autofocus placeholder="SCAN BARCODE" />
                   </form>
                 </div>
               </div>
@@ -125,61 +103,189 @@ POS
         </div>
         <div class="card-body">
           <div class="row border-bottom" style="height:80%; overflow-y: auto;" ref="receipt_box" v-bind:style="leftColStyles">
-            <ul class="w-100 pl-3 pr-4">
-              <li v-for="item in scanned_products">
+            <ol class="w-100 pl-3 pr-4">
+              <li v-for="(item, key) in scanned_products">
                 <div class="row border-top">
                   <div class="col-8 pr-0 ">
-                    <div style="min-width: 168px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">
-                      [[ item.name ]]
+                    <div style="font-weight:bold; min-width: 168px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">
+                      [[ item.name ]] 
                     </div>
                     <div>
                       [[ item.size ]] <span class="float-right" v-if="item.qty > 1">&#8369;[[ item.price ]] x [[ item.qty ]] pcs</span>
                     </div>
                   </div>
                   <div class="col-4 text-right pl-0 pr-0">
-                    &#8369;[[ item.total_price ]]
+                    <div><button v-on:click="$delete(scanned_products, key); barcode_input_focus();" class="btn btn-sm btn-danger rounded-circle py-0 px-1 m-0">X</button></div>
+                    <div>&#8369;[[ item.total_price ]]</div>
                   </div>
                 </div>
               </li>
-            </ul>
+            </ol>
           </div>
           <div class="row border-top" style="height: 20%;">
-              <h5 class="m-0 p-0">TOTAL:</h5>
-              <h1 class="w-100 m-0 p-0 text-right" style="font-weight:bold;">&#8369; [[ total_transaction_price.toLocaleString() ]]</h1>
+            <h5 class="m-0 p-0">TOTAL:</h5>
+            <h1 class="w-100 m-0 p-0 text-right" style="font-weight:bold;">&#8369; [[ total_transaction_price.toLocaleString() ]]</h1>
           </div>
         </div>
       </div>
     </div>
   </div>
   
+  <!-- Check Out Modal -->
+  <button id="checkOutModalButton" ref="checkOutModalButton" data-toggle="modal" data-target="#checkOutModal" style="display:none;"></button>
+  <div class="modal fade" id="checkOutModal" ref="checkOutModal" tabindex="-1" aria-labelledby="checkOutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title"><i class="material-icons align-middle">beenhere</i>CHECK OUT</h3> 
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form v-on:submit.prevent="post_transaction()">
+            <div class="row border border-dark rounded p-3">
+              <div class="form-group mx-auto">
+                <label for="amount_input" class="bmd-label-floating">AMOUNT RECIEVED</label>
+                <input v-model="amount_recieved" v-on:keyup="getChange()" type="number" step="0.01" id="amount_input" ref="amount_input" class="h2 form-control" />
+              </div>
+            </div>
+            <div class="row border border-dark rounded p-3 h6">
+              <span style="color: #AAAAAA;">TOTAL PRICE</span> <span class="text-right h2 w-100">&#8369; [[ total_transaction_price.toLocaleString() ]]</span>
+            </div>
+            <div class="row border border-dark rounded p-3 h6">
+              <span style="color: #AAAAAA;">CHANGE</span> <span class="text-right h2 w-100">&#8369; [[ amount_changed.toLocaleString() ]]</span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <input type="hidden" id="form_ctrl" name="form_ctrl" value=""/>
+            <button v-on:click.prevent="post_transaction()" class="btn btn-primary">Finish Transaction</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!--POS ALERT-->
+  <button id="POSalertModalButton" ref="POSalertModalButton" data-toggle="modal" data-target="#POSalertModal" style="display:none; z-index: 10000000 !important"></button>
+  <div class="modal fade" id="POSalertModal" tabindex="-1" role="dialog" aria-labelledby="POSalertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          <div>
+            <i style="font-size:7em;" class="material-icons text-success">check_circle</i>
+          </div>
+          <div class="h2 m-0 p-0">TRANSACTION COMPLETE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barcode Product Modal -->
+  <button id="prodModalButton" ref="prodModalButton" data-toggle="modal" data-target="#prodModal" style="display:none;"></button>
+  <div class="modal fade" id="prodModal" ref="prodModal" tabindex="-1" aria-labelledby="prodModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title"><i class="material-icons align-middle">queue</i> New/Edit Product</h3> 
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form v-on:submit.prevent="newEditProductSearch()">
+          <div class="modal-body">
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="bmd-label-floating">Barcode</label>
+                      <input type="text" v-model="neBarcode" class="form-control h2 text-center" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Confirm</button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New/Edit Product Modal -->
+  <button id="newEditProductModalButton" ref="newEditProductModalButton" data-toggle="modal" data-target="#newEditProductModal" style="display:none;"></button>
+  <div class="modal fade" id="newEditProductModal" ref="newEditProductModal" tabindex="-1" aria-labelledby="newProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title"><i class="material-icons align-middle">queue</i> <span id="new_edit_modal_prod"></span> Product</h3> 
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form v-on:submit.prevent="post_new_edit_product()">
+          <div class="modal-body">
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="bmd-label-floating">Barcode</label>
+                    <input type="text" v-model="neBarcode" class="form-control h5 " required/>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="bmd-label-floating ">Name</label>
+                    <input type="text" v-model="neName" class="form-control h5 " required/>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group ">
+                    <label class="bmd-label-floating">Description</label>
+                    <input type="text" v-model="neDescription" class="form-control h5 " required/>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group ">
+                    <label class="bmd-label-floating">Size</label>
+                    <input type="text" v-model="neSize" class="form-control h5 " required/>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group ">
+                    <label for="id_qty_stock" class="bmd-label-floating">Quantity Stock</label>
+                    <input type="number" v-model="neQtyStock" class="form-control h5 " required/>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mx-auto">
+                  <div class="form-group ">
+                    <label class="bmd-label-floating">Price</label>
+                    <input type="number" v-model="nePrice" step="0.01" class="form-control h5 " required/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Confirm</button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
 </div>
 {% endblock content %}
-
-{% block readyScript %}
-  $("#test_btn").click(function () {
-      var data_test = [ 
-             {"barcode": "1234567892", "name": "KOPIKa BLNC TP", "description": "Kopiko Blanca Twin-Packa", "size": "36mg", "qty_stock": 3, "price": 12.17},
-             {"barcode": "1234567893", "name": "KOPIKi BLNC TP", "description": "Kopiko Blanca Twin-Packi", "size": "37mg", "qty_stock": 4, "price": 13.17}
-         ];
-    fetch('/pos/posa/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token }}'
-      },
-      credentials: 'same-origin',
-      body: JSON.stringify(data_test)
-    })
-    .then((response) => {
-      console.log(response)
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-  });
-{% endblock readyScript %}
-
 
 {% block vueScript %}
   <script>
@@ -188,6 +294,8 @@ POS
       delimiters: ['[[', ']]'],
       data () {
         return {
+          leftColStyles: { },
+
           all_products: [],
           scanned_products: [],
           total_transaction_price: 0.00,
@@ -196,17 +304,34 @@ POS
           barcode_error: '',
           scan_qty: 1,
           scan_quantity_holder: false,
-          leftColStyles: { },
+          amount_recieved: '',
+          amount_changed: 0,
+
+          neBarcode: '',
+          neName: '',
+          neDescription: '',
+          neSize: '',
+          neQtyStock: '',
+          nePrice: '',
         }
       },
       methods: {
-        api_all_product() {
-          fetch("{% url 'api_all_product' %}")
+        async api_all_product() {
+          await fetch("{% url 'api_all_product' %}")
           .then(response => response.json())
           .then(data => {
             this.all_products = data;
             console.log(this.all_products);
           });
+        },
+        
+        getTransactionPrice(){
+          this.total_transaction_price = this.scanned_products.reduce((acc, item) => acc + item.total_price, 0);
+        },
+
+        getChange() {
+          this.amount_changed = this.amount_recieved - this.total_transaction_price;
+          if (this.amount_changed < 0) this.amount_changed = 0;
         },
 
         search_barcode() {
@@ -219,16 +344,15 @@ POS
               this.barcode_input = temp_bcode[1]
               this.scan_qty = temp_bcode[0]
             }
-            if (this.scan_quantity_holder == false || this.scan_qty == '' || this.scan_qty == '0') {
-              this.scan_qty = 1;
-            }
+            if (this.scan_quantity_holder == false || this.scan_qty == '' || this.scan_qty == '0') this.scan_qty = 1;
             for(var i = 0; i < this.all_products.length; i++) {
               if(this.all_products[i].barcode == this.barcode_input) {
                 this.product_display.unshift(this.all_products[i])
                 let temp_product = {...this.all_products[i]}
+                Vue.delete(temp_product, 'description');
+                Vue.delete(temp_product, 'qty_stock');
                 temp_product.qty = this.scan_qty
                 temp_product.total_price = temp_product.qty * temp_product.price
-                this.total_transaction_price += temp_product.total_price
                 this.scanned_products.push(temp_product)
                 this.barcode_input = ''
               }
@@ -238,13 +362,115 @@ POS
               this.barcode_input = ''
               setTimeout(() => {this.barcode_error = ''}, 2000)
             }
-            this.scan_quantity_holder = false
+            this.scan_quantity_holder = false;
+            this.getTransactionPrice();
+          }
+          //console.log(this.scanned_products)
+        },
+        
+        async post_transaction() {
+          if (this.amount_recieved >= this.total_transaction_price) {
+            let data = [...this.scanned_products];
+            const today = new Date();
+            const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            const dateTime = date +' '+ time;
+            data.push({ "date_time" : dateTime, 
+                        "amount_sale": this.total_transaction_price, 
+                        "amount_recieved" : this.amount_recieved, 
+                        "amount_changed": this.amount_changed, 
+                        "employee" : "{{user}}"
+            });
+           
+            await fetch("{% url 'post_transaction' %}", {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+              },
+              credentials: 'same-origin',
+              body: JSON.stringify(data),
+            })
+            .then((response) => {
+              console.log(response)
+            })
+            .catch((error) => {
+              console.log(error)
+            })
+
+            this.$refs.checkOutModalButton.click();
+            this.$refs.POSalertModalButton.click();
+            setTimeout( () => { this.$refs.POSalertModalButton.click(); }, 2000);
+            setTimeout( () => { location.reload(); }, 2200);
           }
         },
 
+        async newEditProductSearch() {
+          let holder = false;
+          this.all_products.splice(0);
+          await this.api_all_product();
+          if (this.neBarcode.length > 0) {
+            for(var i = 0; i < this.all_products.length; i++) {
+              if(this.all_products[i].barcode == this.neBarcode) {
+                let temp_product = {...this.all_products[i]}
+                this.neName = temp_product.name;
+                this.neDescription = temp_product.description;
+                this.neSize = temp_product.size;
+                this.neQtyStock = temp_product.qty_stock;
+                this.nePrice = temp_product.price;
+                holder = true;
+              }
+            }
+            if (!holder) {
+              this.neName = null;
+              this.neDescription = null;
+              this.neSize = null;
+              this.neQtyStock = null;
+              this.nePrice = null;
+            }
+            this.$refs.prodModalButton.click();
+            this.$refs.newEditProductModalButton.click();
+          }
+        },
+
+        async post_new_edit_product() {
+          let data_test = [{
+                            "barcode": this.neBarcode,
+                            "name": this.neName,
+                            "description": this.neDescription,
+                            "size": this.neSize,
+                            "qty_stock": this.neQtyStock,
+                            "price": this.nePrice
+          }];
+          await fetch("{% url 'post_new_edit_product' %}", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify(data_test)
+          })
+          .then((response) => {
+            this.$refs.newEditProductModalButton.click();
+            this.api_all_product();
+            console.log(response)
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+        },
+
         keymonitor(event) {
-          if (event.key == 'F2') {
-            this.$refs.change_scan_qty.click()
+          if (event.ctrlKey && event.key == 'Enter' && this.total_transaction_price > 0) {
+            this.$refs.checkOutModalButton.click();
+            if (this.$refs.prodModal.classList.contains('show')) this.$refs.prodModalButton.click();
+            if (this.$refs.newEditProductModal.classList.contains('show')) this.$refs.newEditProductModalButton.click();
+          } 
+          if (event.key == "F2") {
+            this.$refs.prodModalButton.click();
+            if (this.$refs.checkOutModal.classList.contains('show')) this.$refs.checkOutModalButton.click();
+            if (this.$refs.newEditProductModal.classList.contains('show')) this.$refs.newEditProductModalButton.click();
           }
         },
 
@@ -257,10 +483,17 @@ POS
           var receipt_box = this.$refs.receipt_box;
           receipt_box.scrollTop = receipt_box.scrollHeight;
         },
+
+        barcode_input_focus() {
+          this.product_display.splice(0);
+          this.getTransactionPrice();
+          this.$refs.barcode_input.focus();
+        },
+
         
       },
       beforeMount(){
-          this.api_all_product()
+        this.api_all_product()
       },
       updated () {
         this.scrollToEnd();	

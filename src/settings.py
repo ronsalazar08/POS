@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'apps.employee',
     'apps.inventory',
     'apps.pos',
+    'apps.sales',
     
 ]
 
