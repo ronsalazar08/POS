@@ -75,7 +75,8 @@ POS
                   <div class="col-md-12">
                     <div class="h-100 border border-dark rounded pt-0 pb-0">
                       <h5 style="font-size: 1em; font-weight: bold;" class="m-0"><i class="material-icons align-middle">qr_code</i> [[ product.barcode ]]</h5>
-                      <h5 style="font-size: 1em; font-weight: bold;" class="m-0 text-warning" v-if="product.qty_stock < 5"><i class="material-icons align-middle text-dark">inventory</i> LOW STOCK</h5>
+                      <h5 style="font-size: 1em; font-weight: bold;" class="m-0 text-warning" v-if="product.qty_stock < 5 && product.qty_stock > 0"><i class="material-icons align-middle text-dark">inventory</i> LOW STOCK</h5>
+                      <h5 style="font-size: 1em; font-weight: bold;" class="m-0 text-danger" v-else-if="product.qty_stock < 1"><i class="material-icons align-middle text-dark">inventory</i> NO STOCK IN SYSTEM INVENTORY</h5>
                     </div>
                   </div>
                 </div>

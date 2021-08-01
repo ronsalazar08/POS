@@ -7,6 +7,138 @@ Inventory
 {% endblock title %}
 
 {% block content %}
+  <div class="row" style="height: calc(100vh - 185px);">
+    <div class="col-md-7">
+      <div class="card card-nav-tabs">
+        <div class="card-header card-header-success">
+          <h4><i class="material-icons align-middle" >library_books</i> List of Transactions</h4>
+        </div>
+        {% comment %} <div class="card-body" style="height:535px; overflow: auto;"> {% endcomment %}
+        <div class="card-body" style="height: calc(100vh - 185px); overflow: auto;">
+          <div class="tab-content">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>TRANSACTION #</th>
+                  <th>DATE - TIME</th>
+                  <th>AMOUNT</th>
+                  <th>RECIEVED</th>
+                  <th>CHANGE</th>
+                  <th>EMPLOYEE</th>
+                  <th class="text-center center pl-0 pr-0">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody class="product_list">
+              {% for t in trans %}
+                <tr>
+                  <td>{{t}}</td>
+                  <td>{{t.date_time|date:"M d, y - h:i A"}}</td>
+                  <td>{{t.amount_sale|floatformat:2}}</td>
+                  <td>{{t.amount_recieved|floatformat:2}}</td>
+                  <td>{{t.amount_changed|floatformat:2}}</td>
+                  <td>{{t.employee}}</td>
+                  <td class="text-center pl-0 pr-0"> 
+                    {% comment %} {% url 'delete_product' pk=product.pk as delete_url %} {% endcomment %}
+                    {% comment %} <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-danger" data-toggle="modal" data-tooltip="tooltip" title="Delete" data-target="#prodfromDeleteModal" onclick="delete_prod_confirm('{{delete_url}}', '{{product.name}}')"> {% endcomment %}
+                    <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-info" data-tooltip="tooltip" title="View" onclick="">
+                      <i class="material-icons">visibility</i>
+                    </button type="button">
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan=7 class="h3 text-center">No Data to Display</td>
+                </tr>
+              {% endfor %} 
+              {% comment %} {% for product in products %}
+                <tr>
+                  <td>{{ product.barcode }}</td>
+                  <td style="max-width: 150px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">{{ product.name }}</td>
+                  <td style="max-width: 150px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">{{ product.description }}</td>
+                  <td>{{ product.size }}</td>
+                  <td class="text-center">
+                    <span class="p-2 border rounded
+                      {% if product.qty_stock < 5 and product.qty_stock > 0 %}
+                        text-warning border-warning
+                      {% elif product.qty_stock <= 0  %}
+                        text-danger border-danger
+                      {% else  %}
+                        text-success border-success
+                      {% endif %}" style="font-weight: bold;"
+                    >{{ product.qty_stock }}</span></td>
+                  <td>&#8369; {{ product.price }}</td>
+                  <td class="text-center pl-0 pr-0">
+                    <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-info" data-toggle="modal" data-tooltip="tooltip" title="Edit" data-target="#newEditProductModal" onclick="newEditProduct({{product.pk}}, '{{product.barcode}}', '{{product.name}}', '{{product.description}}', '{{product.size}}', {{product.qty_stock}}, {{product.price}})">
+                      <i class="material-icons">edit</i>
+                    </button type="button">
+                  </td>
+                  <td class="text-center pl-0 pr-0">
+                    {% url 'delete_product' pk=product.pk as delete_url %}
+                    <button type="button" class="m-0 pl-2 pr-2 btn btn btn-sm btn-danger" data-toggle="modal" data-tooltip="tooltip" title="Delete" data-target="#prodfromDeleteModal" onclick="delete_prod_confirm('{{delete_url}}', '{{product.name}}')">
+                      <i class="material-icons">delete</i>
+                    </button type="button">
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan=6 class="h3 text-center">No Data to Display</td>
+                </tr>
+              {% endfor %} {% endcomment %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="row m-auto h-25" >
+        <div class="card">
+          <div class="card-header card-header-icon card-header-info">
+            <div class="card-icon text-center">
+              <i class="material-icons" style="font-size: 2.8em;">attach_money</i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h4 class="text-center font-weight-bold">Total Sales Today is <span class="bg-success text-white border border-success rounded" style="font-size: 28px;">&#8369; 9999.99</span></h4>
+            {% comment %} <div class="form-group">
+              <form id="add_edit_form">
+                <label for="input_fetch" class="bmd-label-floating">BARCODE</label>
+                <input type="text" id="input_fetch" class="form-control" autofocus>
+              </form>
+            </div> {% endcomment %}
+          </div>
+        </div>
+      </div>
+      <div class="row m-auto h-75">
+        <div class="card">
+          <div class="card-header card-header-icon card-header-danger">
+            <div class="card-icon text-center">
+              <i class="material-icons" style="font-size: 2.8em;">report</i>
+            </div>
+          </div>
+          <div class="card-body pl-3 pr-3" style="overflow-y: auto !important;">
+            {% for prod in list_of_needed_prod %}
+              <p class="border-bottom" style="white-space: nowrap; overflow:hidden; text-overflow: ellipsis;">&bull; 
+                <a href="#" class="
+                  {% comment %} {% if prod.qty_stock < 5 and prod.qty_stock > 0 %}
+                    text-warning
+                  {% elif prod.qty_stock <= 0  %}
+                    text-danger
+                  {% endif %} {% endcomment %}
+                " 
+                data-toggle="modal" data-target="#newEditProductModal"
+                onclick="newEditProduct({{prod.pk}}, '{{prod.barcode}}', '{{prod.name}}', '{{prod.description}}', '{{prod.size}}', {{prod.qty_stock}}, {{prod.price}}); "
+                >
+                  {{ prod|title }} - {{prod.size}}
+                </a>
+              </p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 {% endblock content %}
 
 {% block readyScript %}

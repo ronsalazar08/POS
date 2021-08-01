@@ -1,3 +1,7 @@
 {
-    "python.pythonPath": "c:\\Users\\TTECH-AUTOCAD\\Documents\\GitHub\\envi\\Scripts\\python.exe"
+    "python.pythonPath": "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.8/bin/python3.8",
+    // "python.linting.pylintEnabled": true,
+    // "python.linting.enabled": false,
+    "python.languageServer": "Pylance",
+    "python.analysis.extraPaths": ["../envi/lib/python3.8/site-packages"]
 }

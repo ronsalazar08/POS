@@ -6,7 +6,18 @@ from apps.sales.models import *
 from apps.inventory.models import *
 
 def home_sales(request):
-    return HttpResponse("OLO")
+    # return HttpResponse("OLO")
+    trans = Transaction.objects.all()
+    # trans_per_day = []
+    # holder = None
+    # for i in trans:
+    #     if i.date_time != holder:
+    #         holder = i.date_time
+    #         trans_per_day.append([i.])
+    context = {
+        'trans' : trans,
+    }
+    return render(request, 'sales/sales.html', context)
 
 
 def post_transaction(request):
